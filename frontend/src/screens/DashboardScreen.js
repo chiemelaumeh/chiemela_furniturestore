@@ -60,44 +60,44 @@ export default function DashboardScreen() {
       ) : (
         <>
           <Row>
-            <Col md={4}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    {summary.users && summary.users[0]
-                      ? summary.users[0].numUsers
-                      : 0}
-                  </Card.Title>
-                  <Card.Text> Users</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={4}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    {summary.orders && summary.users[0]
-                      ? summary.orders[0].numOrders
-                      : 0}
-                  </Card.Title>
-                  <Card.Text> Orders</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={4}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>
-                    $
-                    {summary.orders && summary.users[0]
-                      ? summary.orders[0].totalSales.toFixed(2)
-                      : 0}
-                  </Card.Title>
-                  <Card.Text> Orders</Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
+						<Col md={4}>
+							<Card>
+								<Card.Body>
+									<Card.Title>
+										{summary.users && summary.users[0]
+											? summary.users[0].numUsers
+											: 0}
+									</Card.Title>
+									<Card.Text> Users</Card.Text>
+								</Card.Body>
+							</Card>
+						</Col>
+						<Col md={4}>
+							<Card>
+								<Card.Body>
+									<Card.Title>
+										{summary.orders && summary.orders[0]
+											? summary.orders[0].numOrders
+											: 0}
+									</Card.Title>
+									<Card.Text> Orders</Card.Text>
+								</Card.Body>
+							</Card>
+						</Col>
+						<Col md={4}>
+							<Card>
+								<Card.Body>
+									<Card.Title>
+										$
+										{summary.orders && summary.orders[0]
+											? summary.orders[0].totalSales.toFixed(2)
+											: 0}
+									</Card.Title>
+									<Card.Text> Orders</Card.Text>
+								</Card.Body>
+							</Card>
+						</Col>
+					</Row>
           <div className="my-3">
             <h2>Sales</h2>
             {summary.dailyOrders.length === 0 ? (
