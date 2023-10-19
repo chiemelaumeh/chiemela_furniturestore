@@ -4,7 +4,7 @@ const apiinfo = {
   
   API:  {
       name: 'Chiemela E-commerce API',
-      Technology: 'node .js',
+      Technology: 'node.js',
       version: '1.0.0',
       status: 'Online',  
     },
