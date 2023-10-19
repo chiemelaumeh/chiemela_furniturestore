@@ -14,19 +14,7 @@ import uploadRouter from "./routes/uploadRoutes.js";
 dotenv.config();
 mongoose.set("strictQuery", false);
 const connectionString = process.env.MONGODB_URI
-// mongoose
-//   .connect(connectionString,
-//     {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-  
-//     })
-//   .then(() => {
-//   console.log("connected to db");
-//   })
-//   .catch((err) => {
-//     console.log(err.message);
-//   });
+
  const connectDb = async() => {
   try {
     await mongoose.connect(connectionString, {
