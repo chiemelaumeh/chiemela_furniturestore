@@ -1,13 +1,10 @@
 # MERN Chiemela Store
 
 
-Welcome to my React and Node tutorial to build a fully-functional e-commerce website.
-
-Watch it on Youtube:
 
 ## Demo Website
 
-- 👉 Render : [https://amazona.onrender.com](https://amazona.onrender.com)
+- 👉 https://chiemela-ecommerce.netlify.app/
 
 
 ## Run Locally
