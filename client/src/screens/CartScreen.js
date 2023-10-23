@@ -88,7 +88,7 @@ export default function CartScreen() {
                         onClick={() => removeItemHandler(item)}
                         variant="light"
                       >
-                        <i className="fas fa-trash"></i>
+                        <i className="red-bg fas fa-trash"></i>
                       </Button>
                     </Col>
                   </Row>
@@ -104,7 +104,7 @@ export default function CartScreen() {
                 <ListGroup.Item>
                   <h3>
                     Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{' '}
-                    items) : $
+                    items) - $
                     {cartItems.reduce((a, c) => a + c.price * c.quantity, 0)}
                   </h3>
                 </ListGroup.Item>
