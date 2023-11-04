@@ -50,6 +50,18 @@ app.use("/api/products", productRouter);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);
 
+app.use((err, req, res, next)=> {
+  const errorStatus = err.status || 500
+  const errorMessage = err.message || "Something went wrong"
+  return res.status(errorStatus).json({
+    successful: false,
+    status: errorStatus,
+    message: errorMessage,
+    stack: err.stack,
+  })
+})
+
+
 const __dirname = path.resolve();
 // app.use(express.static(path.join(__dirname, "../frontend/build")));
 app.get("*", (req, res) =>
@@ -66,5 +78,5 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
-  console.log(`serve at http://localhost:${port}`);
+  console.log(`...Listeniing on port ${port}`);
 });
