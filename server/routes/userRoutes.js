@@ -7,6 +7,7 @@ import { isAuth, isAdmin, generateToken, baseUrl, sendEmail, errorHandler } from
 
 const userRouter = express.Router();
 
+
 userRouter.get(
   "/",
   isAuth,
