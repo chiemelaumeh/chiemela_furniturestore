@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useState, useReducer } from 'react';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -74,9 +74,12 @@ export default function OrderScreen() {
     successPay: false,
     loadingPay: false,
   });
+  const [paymentStatus, setPaymentStatus] = useState('Not Delivered');
+  const [paymentColor, setPaymentColor] = useState('danger');
 
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
+  
   function createOrder(data, actions) {
     return actions.order
       .create({
@@ -113,6 +116,18 @@ export default function OrderScreen() {
   function onError(err) {
     toast.error(getError(err));
   }
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setPaymentStatus('Delivered');
+      setPaymentColor("success")
+
+    }, 5000);
+
+    // Clean up the timeout to avoid memory leaks
+    return () => clearTimeout(timeoutId);
+  }, []); // Empty dependency array means this effect runs once after the initial render
+
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -223,7 +238,7 @@ export default function OrderScreen() {
                   Delivered at {order.deliveredAt}
                 </MessageBox>
               ) : (
-                <MessageBox variant="danger">Not Delivered</MessageBox>
+                <MessageBox variant={paymentColor}>{paymentStatus}</MessageBox>
               )}
             </Card.Body>
           </Card>
@@ -238,7 +253,7 @@ export default function OrderScreen() {
                   Paid at {order.paidAt}
                 </MessageBox>
               ) : (
-                <MessageBox variant="danger">Not Paid</MessageBox>
+                <MessageBox variant="success" > Paid</MessageBox>
               )}
             </Card.Body>
           </Card>
