@@ -257,7 +257,7 @@ function ProductScreen() {
               </FloatingLabel>
 
               <div className="mb-3">
-                <Button disabled={loadingCreateReview} type="submit">
+                <Button  disabled={loadingCreateReview} type="submit">
                   Submit
                 </Button>
                 {loadingCreateReview && <LoadingBox></LoadingBox>}
