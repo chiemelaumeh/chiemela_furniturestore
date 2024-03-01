@@ -33,8 +33,8 @@ function Product(props) {
       <Link to={`/product/${product.slug}`}>
         <img src={product.image} className="card-img-top" alt={product.name} />
       </Link>
-      <Card.Body>
-        <Link to={`/product/${product.slug}`}>
+      <Card.Body >
+        <Link  className='namestyle' to={`/product/${product.slug}`}>
           <Card.Title>{product.name}</Card.Title>
         </Link>
         <Rating rating={product.rating} numReviews={product.numReviews} />
@@ -44,7 +44,9 @@ function Product(props) {
             Out of stock
           </Button>
         ) : (
-          <Button onClick={() => addToCartHandler(product)}>Add to cart</Button>
+          <Button style={{
+            backgroundColor: 'rgb(185, 56, 14)',
+            color: 'white' }} onClick={() => addToCartHandler(product)}>Add to cart</Button>
         )}
       </Card.Body>
     </Card>

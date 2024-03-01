@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(248, 243, 243);
 }
 .site-container {
   min-height: 100vh;
@@ -12,10 +13,29 @@ body {
 main {
   flex: 1;
 }
+.btnred {
+  background-color: rgb(185, 56, 14);
+}
+.navstyle {
+  background-color: rgb(185, 56, 14);
+  color: azure;
+}
+.white {
+  color: azure;
+}
+.namestyle {
+  color: black;
+  text-decoration: none;
+  
+}
+.brown {
+  color: rgb(185, 56, 14);
+}
 .btn-primary,
 .btn-outline-primary {
-  background-color: #f0c040;
-  color: #000000;
+  background-color: rgb(185, 56, 14);
+  /* color: #000000; */
+  border: none;
 }
 .products {
   display: flex;
@@ -24,7 +44,7 @@ main {
 }
 
 .rating span {
-  color: #ffc000;
+  color: rgb(185, 56, 14);
 }
 
 .product {
@@ -53,8 +73,8 @@ main {
   color: #a0a0a0;
 }
 .checkout-steps > div.active {
-  border-bottom: 0.2rem solid #f08000;
-  color: #f08000;
+  border-bottom: 0.2rem solid rgb(185, 56, 14);
+  color: rgb(185, 56, 14);
 }
 
 /* sidebar */
@@ -66,7 +86,7 @@ main {
   height: 100%;
   position: absolute;
   left: -300px;
-  background-color: #100901;
+  background-color: rgba(185, 57, 14, 0.415);
   transition: 0.5s;
 }
 
@@ -124,4 +144,11 @@ main {
 }
 button.thumbnail {
   padding: 0;
+}
+#admin-nav-dropdown {
+  color: white;
+}
+
+#basic-nav-dropdown {
+  color: white;
 }
