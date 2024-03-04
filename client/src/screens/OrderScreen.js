@@ -79,7 +79,6 @@ export default function OrderScreen() {
 
   const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
-  
   function createOrder(data, actions) {
     return actions.order
       .create({
@@ -120,14 +119,12 @@ export default function OrderScreen() {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setPaymentStatus('Delivered');
-      setPaymentColor("success")
-
+      setPaymentColor('success');
     }, 5000);
 
     // Clean up the timeout to avoid memory leaks
     return () => clearTimeout(timeoutId);
   }, []); // Empty dependency array means this effect runs once after the initial render
-
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -205,16 +202,16 @@ export default function OrderScreen() {
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
-    <MessageBox variant="danger">{error}</MessageBox>
+    <MessageBox variant='danger'>{error}</MessageBox>
   ) : (
     <div>
       <Helmet>
         <title>Order {orderId}</title>
       </Helmet>
-      <h1 className="my-3">Order {orderId}</h1>
+      <h1 className='my-3'>Order {orderId}</h1>
       <Row>
         <Col md={8}>
-          <Card className="mb-3">
+          <Card className='mb-3'>
             <Card.Body>
               <Card.Title>Shipping</Card.Title>
               <Card.Text>
@@ -226,7 +223,7 @@ export default function OrderScreen() {
                 {order.shippingAddress.location &&
                   order.shippingAddress.location.lat && (
                     <a
-                      target="_new"
+                      target='_new'
                       href={`https://maps.google.com?q=${order.shippingAddress.location.lat},${order.shippingAddress.location.lng}`}
                     >
                       Show On Map
@@ -234,7 +231,7 @@ export default function OrderScreen() {
                   )}
               </Card.Text>
               {order.isDelivered ? (
-                <MessageBox variant="success">
+                <MessageBox variant='success'>
                   Delivered at {order.deliveredAt}
                 </MessageBox>
               ) : (
@@ -242,34 +239,34 @@ export default function OrderScreen() {
               )}
             </Card.Body>
           </Card>
-          <Card className="mb-3">
+          <Card className='mb-3'>
             <Card.Body>
               <Card.Title>Payment</Card.Title>
               <Card.Text>
                 <strong>Method:</strong> {order.paymentMethod}
               </Card.Text>
               {order.isPaid ? (
-                <MessageBox variant="success">
+                <MessageBox variant='success'>
                   Paid at {order.paidAt}
                 </MessageBox>
               ) : (
-                <MessageBox variant="success" > Paid</MessageBox>
+                <MessageBox variant='success'> Paid</MessageBox>
               )}
             </Card.Body>
           </Card>
 
-          <Card className="mb-3">
+          <Card className='mb-3'>
             <Card.Body>
               <Card.Title>Items</Card.Title>
-              <ListGroup variant="flush">
+              <ListGroup variant='flush'>
                 {order.orderItems.map((item) => (
                   <ListGroup.Item key={item._id}>
-                    <Row className="align-items-center">
+                    <Row className='align-items-center'>
                       <Col md={6}>
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="img-fluid rounded img-thumbnail"
+                          className='img-fluid rounded img-thumbnail'
                         ></img>{' '}
                         <Link to={`/product/${item.slug}`}>{item.name}</Link>
                       </Col>
@@ -284,11 +281,12 @@ export default function OrderScreen() {
             </Card.Body>
           </Card>
         </Col>
-        <Col md={4}>
-          <Card className="mb-3">
+
+        {/* <Col md={4}>
+          <Card className='mb-3'>
             <Card.Body>
               <Card.Title>Order Summary</Card.Title>
-              <ListGroup variant="flush">
+              <ListGroup variant='flush'>
                 <ListGroup.Item>
                   <Row>
                     <Col>Items</Col>
@@ -336,8 +334,8 @@ export default function OrderScreen() {
                 {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
                   <ListGroup.Item>
                     {loadingDeliver && <LoadingBox></LoadingBox>}
-                    <div className="d-grid">
-                      <Button type="button" onClick={deliverOrderHandler}>
+                    <div className='d-grid'>
+                      <Button type='button' onClick={deliverOrderHandler}>
                         Deliver Order
                       </Button>
                     </div>
@@ -346,7 +344,7 @@ export default function OrderScreen() {
               </ListGroup>
             </Card.Body>
           </Card>
-        </Col>
+        </Col> */}
       </Row>
     </div>
   );
