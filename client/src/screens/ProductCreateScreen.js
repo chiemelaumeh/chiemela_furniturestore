@@ -64,60 +64,35 @@ export default function ProductEditScreen() {
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch({ type: 'FETCH_REQUEST' });
-        const { data } = await axios.get(`/db/products/${productId}`);
-        setName(data.name);
-        setSlug(data.slug);
-        setPrice(data.price);
-        setImage(data.image);
-        setImages(data.images);
-        setCategory(data.category);
-        setCountInStock(data.countInStock);
-        setBrand(data.brand);
-        setDescription(data.description);
-        dispatch({ type: 'FETCH_SUCCESS' });
-      } catch (err) {
-        dispatch({
-          type: 'FETCH_FAIL',
-          payload: getError(err),
-        });
-      }
-    };
-    fetchData();
-  }, [productId]);
-
-  const createHandler = async () => {
-    if (window.confirm('Are you sure to create?')) {
-      try {
-        dispatch({ type: 'CREATE_REQUEST' });
-        const { data } = await axios.post(
-          '/db/products',
-          {},
-          {
-            headers: { Authorization: `Bearer ${userInfo.token}` },
-          }
-        );
-        toast.success('product created successfully');
-        dispatch({ type: 'CREATE_SUCCESS' });
-        // navigate(`/admin/product/${data.product._id}`);
-      } catch (err) {
-        toast.error(getError(error));
-        dispatch({
-          type: 'CREATE_FAIL',
-        });
-      }
-    }
-  };
+  // const createHandler = async () => {
+  //   // if (window.confirm('Are you sure to create?')) {
+  //     try {
+  //       dispatch({ type: 'CREATE_REQUEST' });
+  //       const { data } = await axios.post(
+  //         '/db /products',
+  //         {},
+  //         {
+  //           headers: { Authorization: `Bearer ${userInfo.token}` },
+  //         }
+  //       );
+  //       toast.success('product created successfully');
+  //       dispatch({ type: 'CREATE_SUCCESS' });
+  //       navigate(`/admin/product/${data.product._id}`);
+  //     } catch (err) {
+  //       toast.error(getError(error));
+  //       dispatch({
+  //         type: 'CREATE_FAIL',
+  //       });
+  //     }
+  //   // }
+  // };
 
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
       dispatch({ type: 'UPDATE_REQUEST' });
-      await axios.put(
-        `/db/products/${productId}`,
+      await axios.post(
+        `/db/products/`,
         {
           _id: productId,
           name,
@@ -146,9 +121,9 @@ export default function ProductEditScreen() {
   };
   const uploadFileHandler = async (e, forImages) => {
     const file = e.target.files[0];
-    console.log(file);
     const bodyFormData = new FormData();
     bodyFormData.append('file', file);
+    console.log(bodyFormData);
     try {
       dispatch({ type: 'UPLOAD_REQUEST' });
       const { data } = await axios.post('/db/upload', bodyFormData, {
@@ -180,10 +155,122 @@ export default function ProductEditScreen() {
   return (
     <Container className='small-container'>
       <Helmet>
-        <title>Edit Product ${productId}</title>
+        <title>Create Product </title>
       </Helmet>
-      <h1>Edit Product {productId}</h1>
+      <h1>Create Product </h1>
 
+      <Form onSubmit={submitHandler}>
+        <Form.Group className='mb-3' controlId='name'>
+          <Form.Label>Name</Form.Label>
+          <Form.Control
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className='mb-3' controlId='slug'>
+          <Form.Label>Slug</Form.Label>
+          <Form.Control
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <Form.Group className='mb-3' controlId='name'>
+          <Form.Label>Price</Form.Label>
+          <Form.Control
+            value={price}
+            onChange={(e) => setPrice(parseInt(e.target.value))}
+            required
+          />
+        </Form.Group>
+
+        {/* <Form.Group className='mb-3' controlId='image'>
+          <Form.Label>Image File</Form.Label>
+          <Form.Control
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            required
+          />
+        </Form.Group> */}
+        <Form.Group className='mb-3' controlId='imageFile'>
+          <Form.Label>Upload Image</Form.Label>
+          <Form.Control type='file' onChange={uploadFileHandler} />
+          {loadingUpload && <LoadingBox></LoadingBox>}
+        </Form.Group>
+
+        <Form.Group className='mb-3' controlId='additionalImage'>
+          {/* <Form.Label>Additional Images</Form.Label> */}
+          {/* {images.length === 0 && <MessageBox>No image</MessageBox>} */}
+          {/* <ListGroup variant='flush'>
+            {images.map((x) => (
+              <ListGroup.Item key={x}>
+                {x}
+                <Button variant='light' onClick={() => deleteFileHandler(x)}>
+                  <i className='fa fa-times-circle'></i>
+                </Button>
+              </ListGroup.Item>
+            ))}
+          </ListGroup> */}
+        </Form.Group>
+        {/* <Form.Group className='mb-3' controlId='additionalImageFile'>
+          <Form.Label>Upload Aditional Image</Form.Label>
+          <Form.Control
+            type='file'
+            onChange={(e) => uploadFileHandler(e, true)}
+          />
+          {loadingUpload && <LoadingBox></LoadingBox>}
+        </Form.Group> */}
+
+        <Form.Group className='mb-3' controlId='category'>
+          <Form.Label>Category</Form.Label>
+          <Form.Control
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            required
+          />
+        </Form.Group>
+        <Form.Group className='mb-3' controlId='brand'>
+          <Form.Label>Brand</Form.Label>
+          <Form.Control
+            value={brand}
+            onChange={(e) => setBrand(e.target.value)}
+            required
+          />
+        </Form.Group>
+        <Form.Group className='mb-3' controlId='countInStock'>
+          <Form.Label>Count In Stock</Form.Label>
+          <Form.Control
+            value={countInStock}
+            onChange={(e) => setCountInStock(parseInt(e.target.value))}
+            required
+          />
+        </Form.Group>
+        <Form.Group className='mb-3' controlId='description'>
+          <Form.Label>Description</Form.Label>
+          <Form.Control
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </Form.Group>
+
+        <div className='mb-3'>
+          <Button
+            //  onClick={createHandler}
+
+            disabled={loadingUpdate}
+            type='submit'
+          >
+            Create
+          </Button>
+          {loadingUpdate && <LoadingBox></LoadingBox>}
+        </div>
+      </Form>
+
+      {/* 
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -214,24 +301,24 @@ export default function ProductEditScreen() {
               required
             />
           </Form.Group>
-          {/* <Form.Group className='mb-3' controlId='image'>
+          <Form.Group className='mb-3' controlId='image'>
             <Form.Label>Image File</Form.Label>
             <Form.Control
               value={image}
               onChange={(e) => setImage(e.target.value)}
               required
             />
-          </Form.Group> */}
+          </Form.Group>
           <Form.Group className='mb-3' controlId='imageFile'>
             <Form.Label>Upload Image</Form.Label>
             <Form.Control type='file' onChange={uploadFileHandler} />
             {loadingUpload && <LoadingBox></LoadingBox>}
           </Form.Group>
 
-          {/* <Form.Group className='mb-3' controlId='additionalImage'> */}
-            {/* <Form.Label>Additional Images</Form.Label> */}
-            {/* {images.length === 0 && <MessageBox>No image</MessageBox>} */}
-            {/* <ListGroup variant='flush'>
+          <Form.Group className='mb-3' controlId='additionalImage'>
+            <Form.Label>Additional Images</Form.Label>
+            {images.length === 0 && <MessageBox>No image</MessageBox>}
+            <ListGroup variant='flush'>
               {images.map((x) => (
                 <ListGroup.Item key={x}>
                   {x}
@@ -240,16 +327,16 @@ export default function ProductEditScreen() {
                   </Button>
                 </ListGroup.Item>
               ))}
-            </ListGroup> */}
-          {/* </Form.Group> */}
-          {/* <Form.Group className='mb-3' controlId='additionalImageFile'>
+            </ListGroup>
+          </Form.Group>
+          <Form.Group className='mb-3' controlId='additionalImageFile'>
             <Form.Label>Upload Aditional Image</Form.Label>
             <Form.Control
               type='file'
               onChange={(e) => uploadFileHandler(e, true)}
             />
             {loadingUpload && <LoadingBox></LoadingBox>}
-          </Form.Group> */}
+          </Form.Group>
 
           <Form.Group className='mb-3' controlId='category'>
             <Form.Label>Category</Form.Label>
@@ -290,7 +377,7 @@ export default function ProductEditScreen() {
             {loadingUpdate && <LoadingBox></LoadingBox>}
           </div>
         </Form>
-      )}
+      )} */}
     </Container>
   );
 }

@@ -80,7 +80,7 @@ export default function ProductListScreen() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axios.get(`/api/products/admin?page=${page} `, {
+        const { data } = await axios.get(`/db/products/admin?page=${page} `, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
@@ -95,33 +95,12 @@ export default function ProductListScreen() {
     }
   }, [page, userInfo, successDelete]);
 
-  const createHandler = async () => {
-    if (window.confirm('Are you sure to create?')) {
-      try {
-        dispatch({ type: 'CREATE_REQUEST' });
-        const { data } = await axios.post(
-          '/api/products',
-          {},
-          {
-            headers: { Authorization: `Bearer ${userInfo.token}` },
-          }
-        );
-        toast.success('product created successfully');
-        dispatch({ type: 'CREATE_SUCCESS' });
-        navigate(`/admin/product/${data.product._id}`);
-      } catch (err) {
-        toast.error(getError(error));
-        dispatch({
-          type: 'CREATE_FAIL',
-        });
-      }
-    }
-  };
+ 
 
   const deleteHandler = async (product) => {
     if (window.confirm('Are you sure to delete?')) {
       try {
-        await axios.delete(`/api/products/${product._id}`, {
+        await axios.delete(`/db/products/${product._id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         toast.success('product deleted successfully');
@@ -141,12 +120,16 @@ export default function ProductListScreen() {
         <Col>
           <h1>Products</h1>
         </Col>
-        <Col className="col text-end">
+        <Col className='col text-end'>
           <div>
-            <Button style={{
-                        backgroundColor: 'rgb(185, 56, 14)',
-                        color: 'white',
-                      }} type="button" onClick={createHandler}>
+            <Button
+              style={{
+                backgroundColor: 'rgb(185, 56, 14)',
+                color: 'white',
+              }}
+              type='button'
+              onClick={() => navigate(`/admin/product/newproduct`)}
+            >
               Create Product
             </Button>
           </div>
@@ -159,10 +142,10 @@ export default function ProductListScreen() {
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
-        <MessageBox variant="danger">{error}</MessageBox>
+        <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
         <>
-          <table className="table">
+          <table className='table'>
             <thead>
               <tr>
                 <th>ID</th>
@@ -183,16 +166,16 @@ export default function ProductListScreen() {
                   <td>{product.brand}</td>
                   <td>
                     <Button
-                      type="button"
-                      variant="light"
+                      type='button'
+                      variant='light'
                       onClick={() => navigate(`/admin/product/${product._id}`)}
                     >
                       Edit
                     </Button>
                     &nbsp;
                     <Button
-                      type="button"
-                      variant="light"
+                      type='button'
+                      variant='light'
                       onClick={() => deleteHandler(product)}
                     >
                       Delete

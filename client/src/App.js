@@ -30,6 +30,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import AdminRoute from './components/AdminRoute';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
+import ProductCreateScreen from './screens/ProductCreateScreen';
 import OrderListScreen from './screens/OrderListScreen';
 import UserListScreen from './screens/UserListScreen';
 import UserEditScreen from './screens/UserEditScreen';
@@ -41,7 +42,7 @@ function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { fullBox, cart, userInfo } = state;
   // axios.defaults.baseURL = 'http://localhost:4000/';
-  axios.defaults.baseURL = 'https://e-commerce-api-coed.onrender.com/';
+  axios.defaults.baseURL = 'https://team2databasefurniturestore.onrender.com/';
 
   const signoutHandler = () => {
     ctxDispatch({ type: 'USER_SIGNOUT' });
@@ -56,7 +57,7 @@ function App() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get(`/api/products/categories`);
+        const { data } = await axios.get(`/db/products/categories`);
         setCategories(data);
       } catch (err) {
         toast.error(getError(err));
@@ -263,6 +264,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <ProductEditScreen />
+                  </AdminRoute>
+                }
+              ></Route>
+               <Route
+                path='/admin/product/newproduct'
+                element={
+                  <AdminRoute>
+                    <ProductCreateScreen />
                   </AdminRoute>
                 }
               ></Route>
