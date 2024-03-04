@@ -1,23 +1,20 @@
 import jwt from 'jsonwebtoken';
 import mg from 'mailgun-js';
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
-export const errorHandler = (status, message)  => {
-  const err = new Error()
-  err.status = status
-  err.message = message
-  return err
-}
-
-
+export const errorHandler = (status, message) => {
+  const err = new Error();
+  err.status = status;
+  err.message = message;
+  return err;
+};
 
 export const baseUrl = () =>
   process.env.BASE_URL
     ? process.env.BASE_URL
     : process.env.NODE_ENV !== 'production'
     ? 'http://localhost:3000'
-    : 'https://chiemela-ecommerce.netlify.app/';
-
+    : 'https://team2databasefurniturestore.netlify.app/';
 
 
 export const generateToken = (user) => {
@@ -66,49 +63,39 @@ export const mailgun = () =>
     domain: process.env.MAILGUN_DOMIAN,
   });
 
- 
-  export const sendEmail = async (email, subject, url,) => {
-    try {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        port: 465,
-        secure: true,
-        secureConnection: false,
-        auth: {
-          user: "engineerfranklyn@gmail.com",
-          pass: process.env.PASS
-        },
-        tls: {
-          rejectUnauthorized: true
-        }
-      });
-      
-       await transporter.sendMail({
-        from: process.env.USER,
-        to: email,
-        subject: subject,
-        html:
-         ` 
+export const sendEmail = async (email, subject, url) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 465,
+      secure: true,
+      secureConnection: false,
+      auth: {
+        user: 'engineerfranklyn@gmail.com',
+        pass: process.env.PASS,
+      },
+      tls: {
+        rejectUnauthorized: true,
+      },
+    });
+
+    await transporter.sendMail({
+      from: process.env.USER,
+      to: email,
+      subject: subject,
+      html: ` 
              <p>Please Click the following link to reset your password:</p> 
              <p>${url}</p>
-             `
+             `,
+    });
+    //  res.send({ message: "We sent reset password link to your email." });
 
-      });
-        //  res.send({ message: "We sent reset password link to your email." });
-      
-  
-      console.log("Email sent successfully");
-    } catch (error) {
-      console.log("Email not sent");
-      console.log(error);
-    }
-  };
-
-
-
-
-
-
+    console.log('Email sent successfully');
+  } catch (error) {
+    console.log('Email not sent');
+    console.log(error);
+  }
+};
 
 export const payOrderEmailTemplate = (order) => {
   return `<h1>Thanks for shopping with us</h1>
