@@ -146,7 +146,7 @@ export default function ProductEditScreen() {
   };
   const uploadFileHandler = async (e, forImages) => {
     const file = e.target.files[0];
-    console.log(file);
+
     const bodyFormData = new FormData();
     bodyFormData.append('file', file);
     try {
@@ -209,6 +209,7 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='name'>
             <Form.Label>Price</Form.Label>
             <Form.Control
+            type = "number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               required
@@ -270,6 +271,7 @@ export default function ProductEditScreen() {
           <Form.Group className='mb-3' controlId='countInStock'>
             <Form.Label>Count In Stock</Form.Label>
             <Form.Control
+            type="number"
               value={countInStock}
               onChange={(e) => setCountInStock(e.target.value)}
               required

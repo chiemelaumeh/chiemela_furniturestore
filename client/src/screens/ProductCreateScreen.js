@@ -179,8 +179,9 @@ export default function ProductEditScreen() {
         </Form.Group>
 
         <Form.Group className='mb-3' controlId='name'>
-          <Form.Label>Price</Form.Label>
+          <Form.Label type='number'>Price</Form.Label>
           <Form.Control
+            type='number'
             value={price}
             onChange={(e) => setPrice(parseInt(e.target.value))}
             required
@@ -243,6 +244,7 @@ export default function ProductEditScreen() {
         <Form.Group className='mb-3' controlId='countInStock'>
           <Form.Label>Count In Stock</Form.Label>
           <Form.Control
+            type='number'
             value={countInStock}
             onChange={(e) => setCountInStock(parseInt(e.target.value))}
             required
