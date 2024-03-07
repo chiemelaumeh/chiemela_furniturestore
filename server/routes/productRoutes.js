@@ -1,13 +1,14 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
+import { pool } from '../db.js'
 import { isAuth, isAdmin } from '../utils.js';
 
 const productRouter = express.Router();
 
 productRouter.get('/', async (req, res) => {
-  const products = await Product.find();
-  res.send(products);
+  const products = await pool.query(`SELECT * from products`);
+  res.send(products[0]);
 });
 
 productRouter.post(
@@ -219,9 +220,12 @@ productRouter.get(
 );
 
 productRouter.get('/slug/:slug', async (req, res) => {
-  const product = await Product.findOne({ slug: req.params.slug });
+  const { slug } = req.params
+  const query = "SELECT * FROM products WHERE slug= ?"
+  const product = await pool.query(query, [slug]);
+
   if (product) {
-    res.send(product);
+    res.send(product[0][0]);
   } else {
     res.status(404).send({ message: 'Product Not Found' });
   }
