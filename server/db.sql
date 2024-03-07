@@ -1,44 +1,51 @@
-Create table user(
-    userID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    firstName varchar(50)  NULL DEFAULT NULL,
-    lastName varchar(50) NULL DEFAULT NULL,
-    username varchar(15) UNIQUE NOT NULL ,
+Create table users(
+    _id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name varchar(50) NULL DEFAULT NULL,
     email varchar(255) UNIQUE NOT NULL,
-    passwordHash varchar(20) NOT NULL,
-    phoneNumber varchar(15) NULL DEFAULT NULL,
-    registeredAt datetime NOT NULL,   
-    profile TEXT NULL DEFAULT NULL
-	
+    password varchar(20) NOT NULL,
+    isAdmin BOOLEAN DEFAULT FALSE,
+    createdAt datetime NOT NULL,   	
 );
 
 
- CREATE TABLE product (
-  productID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  title varchar(255) UNIQUE NOT NULL,
+ CREATE TABLE products (
+  _id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name varchar(255) UNIQUE NOT NULL,
   slug varchar(255) NOT NULL, 
-  summary varchar(255) NULL,
   image varchar(225) NOT NULL, 
   brand varchar(255) NOT NULL, 
-  publishedAt DATETIME NULL DEFAULT NULL,
+  createdAt DATETIME NULL DEFAULT NULL,
   description varchar(255) NOT NULL, 
   price int (255) NOT NULL DEFAULT 0, 
-  rating int (255) NOT NULL, 
-  reviewCount int (255) DEFAULT 0 NOT NULL, 
-  count int DEFAULT 0 NOT NULL, 
-  category_id int,
-  employee_id INT NOT NULL,
-  sale_id int,
+  rating int (255) NOT NULL DEFAULT 0, 
+  numReviews int (255) DEFAULT 0 NOT NULL, 
+  countInStock int DEFAULT 0 NOT NULL, 
+  category varchar(225) NOT NULL,
+  reviews BIGINT,
+  createdAT datetime NOT NULL,
   SKU int (255) NOT NULL,
-  constraint check (5 >= rating >= 1),
-  createdAt DATE,
-  FOREIGN KEY(employee_id) REFERENCES employee(employeeID),
-  FOREIGN KEY(sale_id) REFERENCES sale(saleID),
-  FOREIGN KEY(category_id) REFERENCES category(categoryID)
+  FOREIGN KEY (category) REFERENCES categories(title),
+  FOREIGN KEY (reviews) REFERENCES rerviews(_id)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION)
   ;
 
 
+
+CREATE TABLE categories (
+    _id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title varchar(225) NOT NULL 
+    
+
+);
+CREATE TABLE reviews (
+    _id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	
+    user_id BIGINT,
+    comment varchar(255) NOT NULL, 
+    rating int (255) NOT NULL, 
+    FOREIGN KEY (user_id) REFERENCES users(_id)
+    );
 
 Create table productReview(
 	productReviewID BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -218,17 +225,17 @@ create Table sale (
 
 
 
-INSERT INTO users (username, firstName, lastname, email, password, )
-VALUES('blackflame', 'chiemela', 'umeh', 'engineerfranklyn', 'pass',)
+-- INSERT INTO users (name, email, password, isAdmin, createdAt, )
+-- VALUES('Frank', 'frank@admin.com', 'adminpass', TRUE, '2024-02-27 15:30:29')
 
-INSERT INTO products (title, slug, image, brand, description, price, rating, count, reviewCount, categoryID, userID )
-VALUES  ('shasta-pic', 'pink-dispenser', 'https://www.mascots.com/wp-content/uploads/2019/07/uhmascots1-1-931x1024.png', 
-'Homicool', 'HIGH QUALITY DURABLE MATERIAL', 36, 3, 60, 7, 1, 1);
+-- INSERT INTO products (name, slug, image, brand, description, price, rating, countInStock, numReviews, category, )
+-- VALUES  ('shasta-pic', 'pink-dispenser', 'https://res.cloudinary.com/dr6yye7b1/image/upload/v1709537144/smcwygzix72phhrdzw6h.jpg', 
+-- 'Homicool', 'HIGH QUALITY DURABLE MATERIAL', 36, 3, 60, 1, 1, );
 
   
 
 
-INSERT INTO categories (name)
-VALUES("category1")
+-- INSERT INTO categories (title)
+-- VALUES("Kitchen")
 
 

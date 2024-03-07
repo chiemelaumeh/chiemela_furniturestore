@@ -1,5 +1,6 @@
 import express from "express";
 import bcrypt from "bcryptjs";
+import { pool } from '../db.js'
 import expressAsyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
@@ -145,15 +146,23 @@ userRouter.delete(
 userRouter.post(
   "/signin",
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    
+    // const user = await User.findOne({ email: req.body.email });
+    const { email } = req.body
+
+    const query = "SELECT * FROM users WHERE email= ?"
+    const user = await pool.query(query,[email]);
+    
     if (user) {
-      if (bcrypt.compareSync(req.body.password, user.password)) {
+
+
+      if (bcrypt.compareSync(req.body.password, user[0][0].password)) {
         res.send({
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          isAdmin: user.isAdmin,
-          token: generateToken(user),
+          _id: user[0][0]._id,
+          name: user[0][0].name,
+          email: user[0][0].email,
+          isAdmin: user[0][0].isAdmin,
+          token: generateToken(user[0][0]),
         });
         return;
       }
@@ -165,18 +174,26 @@ userRouter.post(
 userRouter.post(
   "/signup",
   expressAsyncHandler(async (req, res) => {
-    const newUser = new User({
-      name: req.body.name,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password),
-    });
-    const user = await newUser.save();
 
+    const query =
+    "INSERT INTO users (name, email, password )VALUES(?, ?, ?);";
+
+    let name = req.body.name
+    let email = req.body.email
+    let password =  bcrypt.hashSync(req.body.password)
+    
+    const user  = await pool.query(query, [
+     name, email, password
+  
+    ]);
+ 
+
+   
     res.send({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
+      _id: user.insertId,
+      name: name,
+      email: email,
+      isAdmin: false,
       token: generateToken(user),
     });
   })
