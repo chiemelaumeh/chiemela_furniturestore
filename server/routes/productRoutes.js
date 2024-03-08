@@ -1,7 +1,7 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Product from '../models/productModel.js';
-import { pool } from '../db.js'
+import { pool } from '../db.js';
 import { isAuth, isAdmin } from '../utils.js';
 
 const productRouter = express.Router();
@@ -16,22 +16,66 @@ productRouter.post(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const newProduct = new Product({
-      name: req.body.name,
-      slug: req.body.slug,
-      image: req.body.image,
-      price: req.body.price,
-      category: req.body.category,
-      brand: req.body.brand,
-      countInStock: req.body.countInStock,
-      rating: 0,
-      numReviews: 0,
-      description: req.body.description,
-    });
-    const product = await newProduct.save();
+    const query =
+      'INSERT INTO products (name, slug, image, price, category, brand, countInStock, rating, numReviews, description, images, reviews )VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+
+    let name = req.body.name;
+    let slug = req.body.slug;
+    let image = req.body.image;
+    let price = req.body.price;
+    let category = req.body.category;
+    let brand = req.body.brand;
+    let countInStock = req.body.countInStock;
+    let rating = 0;
+    let numReviews = 0;
+    let description = req.body.description;
+    let images = '[]';
+    let reviews = '[]';
+
+    const product = await pool.query(query, [
+      name,
+      slug,
+      image,
+      price,
+      category,
+      brand,
+      countInStock,
+      rating,
+      numReviews,
+      description,
+      images,
+      reviews,
+    ]);
     res.send({ message: 'Product Created', product });
   })
 );
+
+// productRouter.put(
+//   '/:id',
+//   isAuth,
+//   isAdmin,
+//   expressAsyncHandler(async (req, res) => {
+//     const productId = req.params.id;
+//     const query = 'SELECT * FROM products WHERE _id= ?';
+//     const data = await pool.query(query, [productId]);
+//     const product = data[0][0];
+//     if (product) {
+//       product.name = req.body.name;
+//       product.slug = req.body.slug;
+//       product.price = req.body.price;
+//       product.image = req.body.image;
+//       product.images = req.body.images;
+//       product.category = req.body.category;
+//       product.brand = req.body.brand;
+//       product.countInStock = req.body.countInStock;
+//       product.description = req.body.description;
+//       await product.save();
+//       res.send({ message: 'Product Updated' });
+//     } else {
+//       res.status(404).send({ message: 'Product Not Found' });
+//     }
+//   })
+// );
 
 productRouter.put(
   '/:id',
@@ -39,22 +83,39 @@ productRouter.put(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
-    const product = await Product.findById(productId);
-    if (product) {
-      product.name = req.body.name;
-      product.slug = req.body.slug;
-      product.price = req.body.price;
-      product.image = req.body.image;
-      product.images = req.body.images;
-      product.category = req.body.category;
-      product.brand = req.body.brand;
-      product.countInStock = req.body.countInStock;
-      product.description = req.body.description;
-      await product.save();
+    // const query = 'SELECT * FROM products WHERE _id = ?';
+    // const data = await pool.query(query, [productId]);
+    // const product = data[0][0];
+
+    const updateQuery =
+      `UPDATE products SET  name = ?, slug = ?,  price = ?,  image = ?, images = ?, category = ?,  brand = ?, countInStock = ?,  description = ?  WHERE  _id = ?`;
+
+    // let name = req.body.name;
+    // let slug = req.body.slug;
+    // let price = req.body.price;
+    // let image = req.body.image;
+    // let images = req.body.images;
+    // let category = req.body.category;
+    // let brand = req.body.brand;
+    // let countInStock = req.body.countInStock;
+    // let description = req.body.description;
+
+    // if (product) {
+      await pool.query(updateQuery, [ 
+        req.body.name,
+        req.body.slug,
+        req.body.price,
+        req.body.image,
+        req.body.images,
+        req.body.category,
+        req.body.brand,
+        req.body.countInStock,
+        req.body.description,
+        productId]);
       res.send({ message: 'Product Updated' });
-    } else {
-      res.status(404).send({ message: 'Product Not Found' });
-    }
+    // } else {
+    //   res.status(404).send({ message: 'Product Not Found' });
+    // }
   })
 );
 
@@ -78,28 +139,49 @@ productRouter.post(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
-    const product = await Product.findById(productId);
+
+    const query = 'SELECT * FROM products WHERE _id= ?';
+    const data = await pool.query(query, [productId]);
+    const product = data[0][0];
+
     if (product) {
-      if (product.reviews.find((x) => x.name === req.user.name)) {
-        return res
-          .status(400)
-          .send({ message: 'You already submitted a review' });
-      }
+      // if (product.reviews.find((x) => x.name === req.user.name)) {
+      //   return res
+      //     .status(400)
+      //     .send({ message: 'You already submitted a review' });
+      // }
 
       const review = {
         name: req.user.name,
         rating: Number(req.body.rating),
         comment: req.body.comment,
       };
+
       product.reviews.push(review);
       product.numReviews = product.reviews.length;
       product.rating =
         product.reviews.reduce((a, c) => c.rating + a, 0) /
         product.reviews.length;
-      const updatedProduct = await product.save();
+      // console.log(product);
+      // const updatedProduct = await product.save();
+
+      const updateQuery = `
+      UPDATE products 
+      SET reviews = ?, numReviews = ?, rating = ?
+      WHERE _id = ?
+    `;
+
+      const updatedProduct = await pool.query(updateQuery, [
+        JSON.stringify(product.reviews),
+        product.numReviews,
+        product.rating,
+        productId,
+      ]);
+      console.log(product.reviews);
+
       res.status(201).send({
         message: 'Review Created',
-        review: updatedProduct.reviews[updatedProduct.reviews.length - 1],
+        review: product.reviews[product.reviews.length - 1],
         numReviews: product.numReviews,
         rating: product.rating,
       });
@@ -108,6 +190,29 @@ productRouter.post(
     }
   })
 );
+
+// expressAsyncHandler(async (req, res) => {
+
+//   const query =
+//   "INSERT INTO users (name, email, password )VALUES(?, ?, ?);";
+
+//   let name = req.body.name
+//   let email = req.body.email
+//   let password =  bcrypt.hashSync(req.body.password)
+
+//   const user  = await pool.query(query, [
+//    name, email, password
+
+//   ]);
+
+//   res.send({
+//     _id: user.insertId,
+//     name: name,
+//     email: email,
+//     isAdmin: false,
+//     token: generateToken(user),
+//   });
+// })
 
 const PAGE_SIZE = 3;
 
@@ -120,9 +225,12 @@ productRouter.get(
     const page = query.page || 1;
     const pageSize = query.pageSize || PAGE_SIZE;
 
-    const products = await Product.find()
-      .skip(pageSize * (page - 1))
-      .limit(pageSize);
+    // const products = await Product.find()
+    const data = await pool.query(`SELECT * from products`);
+    // console.log(products[0][0]);
+    const products = data[0];
+    // .skip(pageSize * (page - 1))
+    // .limit(pageSize);
     const countProducts = await Product.countDocuments();
     res.send({
       products,
@@ -214,14 +322,17 @@ productRouter.get(
 productRouter.get(
   '/categories',
   expressAsyncHandler(async (req, res) => {
-    const categories = await Product.find().distinct('category');
+    const query = 'SELECT * FROM categories';
+    const data = await pool.query(query);
+    const titles = data[0];
+    const categories = titles.map((item) => item.title);
     res.send(categories);
   })
 );
 
 productRouter.get('/slug/:slug', async (req, res) => {
-  const { slug } = req.params
-  const query = "SELECT * FROM products WHERE slug= ?"
+  const { slug } = req.params;
+  const query = 'SELECT * FROM products WHERE slug= ?';
   const product = await pool.query(query, [slug]);
 
   if (product) {
@@ -231,9 +342,13 @@ productRouter.get('/slug/:slug', async (req, res) => {
   }
 });
 productRouter.get('/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const { id } = req.params;
+
+  const query = 'SELECT * FROM products WHERE _id= ?';
+  const product = await pool.query(query, [id]);
+
   if (product) {
-    res.send(product);
+    res.send(product[0][0]);
   } else {
     res.status(404).send({ message: 'Product Not Found' });
   }
