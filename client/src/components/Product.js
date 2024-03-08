@@ -1,4 +1,6 @@
 import Card from 'react-bootstrap/Card';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
@@ -18,6 +20,7 @@ function Product(props) {
     const existItem = cartItems.find((x) => x._id === product._id);
     const quantity = existItem ? existItem.quantity + 1 : 1;
     const { data } = await axios.get(`/db/products/${item._id}`);
+    console.log(data);
     if (data.countInStock < quantity) {
       window.alert('Sorry. Product is out of stock');
       return;
@@ -31,22 +34,40 @@ function Product(props) {
   return (
     <Card>
       <Link to={`/product/${product.slug}`}>
-        <img src={product.image} className="card-img-top" alt={product.name} />
+        <img src={product.image} className='card-img-top' alt={product.name} />
       </Link>
-      <Card.Body >
-        <Link  className='namestyle' to={`/product/${product.slug}`}>
+      <Card.Body>
+        <Link className='namestyle' to={`/product/${product.slug}`}>
           <Card.Title>{product.name}</Card.Title>
         </Link>
         <Rating rating={product.rating} numReviews={product.numReviews} />
-        <Card.Text>${product.price}</Card.Text>
+        <Card.Title> </Card.Title>
+        <Row>
+          <Col>
+            {' '}
+            <strong>${product.price}</strong>
+          </Col>
+
+          {product.countInStock < 5 ? (
+            <Col style={{"color" : "red"}}>Only {product.countInStock} left</Col>
+          ) : (
+            <Col></Col>
+          )}
+        </Row>
         {product.countInStock === 0 ? (
-          <Button variant="light" disabled>
+          <Button variant='light' disabled>
             Out of stock
           </Button>
         ) : (
-          <Button style={{
-            backgroundColor: 'rgb(185, 56, 14)',
-            color: 'white' }} onClick={() => addToCartHandler(product)}>Add to cart</Button>
+          <Button
+            style={{
+              backgroundColor: 'rgb(185, 56, 14)',
+              color: 'white',
+            }}
+            onClick={() => addToCartHandler(product)}
+          >
+            Add to cart
+          </Button>
         )}
       </Card.Body>
     </Card>
