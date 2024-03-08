@@ -225,14 +225,31 @@ export default function ProductEditScreen() {
           {loadingUpload && <LoadingBox></LoadingBox>}
         </Form.Group> */}
 
-        <Form.Group className='mb-3' controlId='category'>
+        {/* <Form.Group className='mb-3' controlId='category'>
           <Form.Label>Category</Form.Label>
           <Form.Control
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             required
           />
+        </Form.Group> */}
+
+        <Form.Group className='mb-3' controlId='category'>
+          <Form.Label>Category</Form.Label>
+          <Form.Select
+            aria-label='Category'
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            <option value=''>Select...</option>
+            <option value='Kitchen'>Kitchen</option>
+            <option value='Livingroom'>Livingroom</option>
+            <option value='Dining'>Dining</option>
+            <option value='Outdoor'>Outdoor</option>
+            <option value='Bedroom'>Bedroom</option>
+          </Form.Select>
         </Form.Group>
+
         <Form.Group className='mb-3' controlId='brand'>
           <Form.Label>Brand</Form.Label>
           <Form.Control

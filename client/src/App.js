@@ -41,7 +41,7 @@ import ResetPasswordScreen from './screens/ResetPasswordScreen';
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { fullBox, cart, userInfo } = state;
-  
+
   // axios.defaults.baseURL = 'http://localhost:4000/';
   axios.defaults.baseURL = 'https://team2databasefurniturestore.onrender.com/';
 
@@ -54,6 +54,7 @@ function App() {
   };
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+ 
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -66,6 +67,13 @@ function App() {
     };
     fetchCategories();
   }, []);
+  // if (userInfo.isAdmin === "true") {
+  //   userInfo.isAdmin = true
+  // } else {
+  //   userInfo.isAdmin = false
+  // }
+
+
   return (
     <BrowserRouter>
       <div
@@ -128,7 +136,7 @@ function App() {
                       Sign In
                     </Link>
                   )}
-                  {userInfo && userInfo.isAdmin && (
+                  {userInfo && userInfo.isAdmin === "true" && (
                     <NavDropdown title='Admin' id='admin-nav-dropdown'>
                       <LinkContainer to='/admin/dashboard'>
                         <NavDropdown.Item>Dashboard</NavDropdown.Item>
@@ -166,7 +174,7 @@ function App() {
                   to={{ pathname: '/search', search: `category=${category}` }}
                   onClick={() => setSidebarIsOpen(false)}
                 >
-                  <Nav.Link>{category}</Nav.Link>
+                  <Nav.Link className='namestyle '>{category}</Nav.Link>
                 </LinkContainer>
               </Nav.Item>
             ))}
@@ -268,7 +276,7 @@ function App() {
                   </AdminRoute>
                 }
               ></Route>
-               <Route
+              <Route
                 path='/admin/product/newproduct'
                 element={
                   <AdminRoute>

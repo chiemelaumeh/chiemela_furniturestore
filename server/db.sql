@@ -25,7 +25,7 @@ Create table users(
   createdAT datetime NOT NULL,
   SKU int (255) NOT NULL,
   FOREIGN KEY (category) REFERENCES categories(title),
-  FOREIGN KEY (reviews) REFERENCES rerviews(_id)
+  FOREIGN KEY (reviews) REFERENCES reviews(_id)
   ON DELETE NO ACTION
   ON UPDATE NO ACTION)
   ;
