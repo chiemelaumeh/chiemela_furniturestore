@@ -87,8 +87,7 @@ productRouter.put(
     // const data = await pool.query(query, [productId]);
     // const product = data[0][0];
 
-    const updateQuery =
-      `UPDATE products SET  name = ?, slug = ?,  price = ?,  image = ?, images = ?, category = ?,  brand = ?, countInStock = ?,  description = ?  WHERE  _id = ?`;
+    const updateQuery = `UPDATE products SET  name = ?, slug = ?,  price = ?,  image = ?, images = ?, category = ?,  brand = ?, countInStock = ?,  description = ?  WHERE  _id = ?`;
 
     // let name = req.body.name;
     // let slug = req.body.slug;
@@ -101,18 +100,19 @@ productRouter.put(
     // let description = req.body.description;
 
     // if (product) {
-      await pool.query(updateQuery, [ 
-        req.body.name,
-        req.body.slug,
-        req.body.price,
-        req.body.image,
-        req.body.images,
-        req.body.category,
-        req.body.brand,
-        req.body.countInStock,
-        req.body.description,
-        productId]);
-      res.send({ message: 'Product Updated' });
+    await pool.query(updateQuery, [
+      req.body.name,
+      req.body.slug,
+      req.body.price,
+      req.body.image,
+      req.body.images,
+      req.body.category,
+      req.body.brand,
+      req.body.countInStock,
+      req.body.description,
+      productId,
+    ]);
+    res.send({ message: 'Product Updated' });
     // } else {
     //   res.status(404).send({ message: 'Product Not Found' });
     // }
@@ -144,12 +144,35 @@ productRouter.post(
     const data = await pool.query(query, [productId]);
     const product = data[0][0];
 
+    const query2 = 'SELECT * FROM orders WHERE user_id= ?';
+    const userOrders = await pool.query(query2, [req.user._id]);
+    const orders = userOrders[0];
+
     if (product) {
-      // if (product.reviews.find((x) => x.name === req.user.name)) {
-      //   return res
-      //     .status(400)
-      //     .send({ message: 'You already submitted a review' });
-      // }
+      if (product.reviews.find((x) => x.name === req.user.name)) {
+        return res
+          .status(400)
+          .send({ message: 'You already submitted a review' });
+      }
+
+      const allOrderItems = [];
+
+      orders.forEach((order) => {
+        allOrderItems.push(...order.orderItems);
+      });
+
+      const idsArray = allOrderItems
+        .map((obj) => obj._id)
+        .filter((id) => typeof id === 'number');
+
+      const stoi = parseInt(req.params.id);
+
+      if (!idsArray.includes(stoi)) {
+        // console.log(`The array contains the value.`);
+        return res
+          .status(400)
+          .send({ message: 'You have not purchased this item' });
+      }
 
       const review = {
         name: req.user.name,
@@ -177,7 +200,6 @@ productRouter.post(
         product.rating,
         productId,
       ]);
-      console.log(product.reviews);
 
       res.status(201).send({
         message: 'Review Created',
@@ -190,29 +212,6 @@ productRouter.post(
     }
   })
 );
-
-// expressAsyncHandler(async (req, res) => {
-
-//   const query =
-//   "INSERT INTO users (name, email, password )VALUES(?, ?, ?);";
-
-//   let name = req.body.name
-//   let email = req.body.email
-//   let password =  bcrypt.hashSync(req.body.password)
-
-//   const user  = await pool.query(query, [
-//    name, email, password
-
-//   ]);
-
-//   res.send({
-//     _id: user.insertId,
-//     name: name,
-//     email: email,
-//     isAdmin: false,
-//     token: generateToken(user),
-//   });
-// })
 
 const PAGE_SIZE = 3;
 

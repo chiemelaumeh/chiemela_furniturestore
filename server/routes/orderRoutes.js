@@ -2,6 +2,7 @@ import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
+import { pool } from '../db.js';
 import Product from '../models/productModel.js';
 import { isAuth, isAdmin, mailgun, payOrderEmailTemplate } from '../utils.js';
 
@@ -12,8 +13,9 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.find().populate('user', 'name');
-    res.send(orders);
+    // const orders = await Order.find().populate('user', 'name');
+    const orders = await pool.query(`SELECT * from orders`);
+    res.send(orders[0]);
   })
 );
 
@@ -21,19 +23,52 @@ orderRouter.post(
   '/',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const newOrder = new Order({
-      orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
-      shippingAddress: req.body.shippingAddress,
-      paymentMethod: req.body.paymentMethod,
-      itemsPrice: req.body.itemsPrice,
-      shippingPrice: req.body.shippingPrice,
-      taxPrice: req.body.taxPrice,
-      totalPrice: req.body.totalPrice,
-      user: req.user._id,
-    });
+    const insertQuery =
+      'INSERT INTO orders (orderItems, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, user_id, user_name, isPaid, isDelivered )VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+    // console.log(req.body.orderItems)
+    let orderItem = req.body.orderItems.map((x) => ({
+      ...x,
+      product: x._id,
+    }));
+    // console.log(orderItem)
+    // let shippingAddress = req.body.shippingAddress;
+    // console.log(orderItem)
+    let orderItems = [JSON.stringify(orderItem)];
+    // let orderItem = order.orderItems.push(orderItemss)
+    let paymentMethod = req.body.paymentMethod;
+    let itemsPrice = req.body.itemsPrice;
+    let shippingPrice = req.body.shippingPrice;
+    let taxPrice = req.body.taxPrice;
+    let totalPrice = req.body.totalPrice;
+    let user = req.user._id;
+    let user_name = req.user.name;
+    let isPaid = 'false';
+    let isDelivered = 'false';
 
-    const order = await newOrder.save();
-    res.status(201).send({ message: 'New Order Created', order });
+    await pool.query(insertQuery, [
+      orderItems,
+      paymentMethod,
+      itemsPrice,
+      shippingPrice,
+      taxPrice,
+      totalPrice,
+      user,
+      user_name,
+      isPaid,
+      isDelivered,
+    ]);
+
+    res.status(201).send({
+      orderItems: orderItems,
+      paymentMethod: paymentMethod,
+      itemsPrice: itemsPrice,
+      shippingPrice: shippingPrice,
+      taxPrice: taxPrice,
+      totalPrice: totalPrice,
+      user: user,
+      isPaid: isPaid,
+      isDelivered: isDelivered,
+    });
   })
 );
 
@@ -94,7 +129,12 @@ orderRouter.get(
   '/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    const orderId = req.params.id;
+
+    const query = 'SELECT * FROM orders WHERE _id= ?';
+    const data = await pool.query(query, [orderId]);
+    const order = data[0][0];
+    // const order = await Order.findById(req.params.id);
     if (order) {
       res.send(order);
     } else {
