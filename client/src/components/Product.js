@@ -49,7 +49,7 @@ function Product(props) {
           </Col>
 
           {product.countInStock < 5 ? (
-            <Col style={{"color" : "red"}}>Only {product.countInStock} left</Col>
+            <Col style={{"color" : "red"}}> <strong>Only {product.countInStock} left</strong> </Col>
           ) : (
             <Col></Col>
           )}

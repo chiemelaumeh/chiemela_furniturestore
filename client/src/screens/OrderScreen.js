@@ -171,15 +171,18 @@ export default function OrderScreen() {
       };
       loadPaypalScript();
     }
-  }, [
-    order,
-    userInfo,
-    orderId,
-    navigate,
-    paypalDispatch,
-    successPay,
-    successDeliver,
-  ]);
+  }, 
+  // [
+  //   order,
+  //   userInfo,
+  //   orderId,
+  //   navigate,
+  //   paypalDispatch,
+  //   successPay,
+  //   successDeliver,
+  // ]
+  []
+  );
 
   async function deliverOrderHandler() {
     try {
@@ -199,6 +202,7 @@ export default function OrderScreen() {
     }
   }
 
+
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
@@ -214,7 +218,7 @@ export default function OrderScreen() {
           <Card className='mb-3'>
             <Card.Body>
               <Card.Title>Shipping</Card.Title>
-              <Card.Text>
+              {/* <Card.Text>
                 <strong>Name:</strong> {order.shippingAddress.fullName} <br />
                 <strong>Address: </strong> {order.shippingAddress.address},
                 {order.shippingAddress.city}, {order.shippingAddress.postalCode}
@@ -229,7 +233,7 @@ export default function OrderScreen() {
                       Show On Map
                     </a>
                   )}
-              </Card.Text>
+              </Card.Text> */}
               {order.isDelivered ? (
                 <MessageBox variant='success'>
                   Delivered at {order.deliveredAt}
