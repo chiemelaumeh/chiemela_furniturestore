@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Store } from '../Store';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
@@ -13,6 +13,7 @@ import axios from 'axios';
 export default function CartScreen() {
   const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
+  const [lowCount, setLowCount] = useState(false)
   const {
     cart: { cartItems },
   } = state;
@@ -23,6 +24,9 @@ export default function CartScreen() {
       window.alert('Sorry. Product is out of stock');
       return;
     }
+    if (data.countInStock <= 10) {
+      setLowCount(true);
+    }
     ctxDispatch({
       type: 'CART_ADD_ITEM',
       payload: { ...item, quantity },
@@ -30,6 +34,7 @@ export default function CartScreen() {
   };
   const removeItemHandler = (item) => {
     ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
+    setLowCount(false)
   };
 
   const checkoutHandler = () => {
@@ -77,7 +82,7 @@ export default function CartScreen() {
                         onClick={() =>
                           updateCartHandler(item, item.quantity + 1)
                         }
-                        disabled={item.quantity === item.countInStock}
+                        disabled={item.quantity === item.countInStock || lowCount}
                       >
                         <i className='fas fa-plus-circle'></i>
                       </Button>

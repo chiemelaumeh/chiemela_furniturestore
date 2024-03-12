@@ -116,7 +116,7 @@ export default function ProductEditScreen() {
     e.preventDefault();
     try {
       dispatch({ type: 'UPDATE_REQUEST' });
-      await axios.put(
+      await axios.post(
         `/db/products/${productId}`,
         {
           _id: productId,

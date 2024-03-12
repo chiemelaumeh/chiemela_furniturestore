@@ -37,6 +37,8 @@ import UserEditScreen from './screens/UserEditScreen';
 import MapScreen from './screens/MapScreen';
 import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
+import { MdOutlineLightMode } from "react-icons/md";
+import { MdOutlineDarkMode } from "react-icons/md";
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -95,12 +97,24 @@ function App() {
                 <i className=' fas fa-bars'></i>
               </Button>
 
+          
               <LinkContainer style={{ color: 'white' }} to='/'>
                 <Navbar.Brand> Team 2 Furniture store</Navbar.Brand>
               </LinkContainer>
+              <LinkContainer style={{ color: 'white' }} to='/'>
+                <Navbar.Brand> 
+
+                {/* {dark ? (
+            
+            <MdOutlineLightMode className="toggleButton" onClick={handleLight} />
+          ) : (
+            <MdOutlineDarkMode className="toggleButton" onClick={handleLight} />
+          )} */}
+                </Navbar.Brand>
+              </LinkContainer>
               <Navbar.Toggle aria-controls='basic-navbar-nav' />
               <Navbar.Collapse id='basic-navbar-nav'>
-                <SearchBox />
+                {/* <SearchBox /> */}
                 <Nav className='me-auto  w-100   justify-content-end'>
                   <Link
                     style={{ color: 'white' }}

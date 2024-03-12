@@ -5,11 +5,12 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
 import axios from 'axios';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Store } from '../Store';
 
 function Product(props) {
   const { product } = props;
+  const [lowCount, setLowCount] = useState(false)
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const {
@@ -24,6 +25,9 @@ function Product(props) {
     if (data.countInStock < quantity) {
       window.alert('Sorry. Product is out of stock');
       return;
+    }
+    if(data.countInStock <= 10) {
+      setLowCount(true)
     }
     ctxDispatch({
       type: 'CART_ADD_ITEM',
@@ -65,8 +69,10 @@ function Product(props) {
               color: 'white',
             }}
             onClick={() => addToCartHandler(product)}
+            disabled={lowCount}
           >
             Add to cart
+            
           </Button>
         )}
       </Card.Body>
