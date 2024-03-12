@@ -4,13 +4,15 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import Rating from './Rating';
+import { IoIosFlame } from 'react-icons/io';
+
 import axios from 'axios';
 import { useContext, useState } from 'react';
 import { Store } from '../Store';
 
 function Product(props) {
   const { product } = props;
-  const [lowCount, setLowCount] = useState(false)
+  const [lowCount, setLowCount] = useState(false);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const {
@@ -26,55 +28,67 @@ function Product(props) {
       window.alert('Sorry. Product is out of stock');
       return;
     }
-    if(data.countInStock <= 10) {
-      setLowCount(true)
+    if (data.countInStock <= 10) {
+      setLowCount(true);
     }
     ctxDispatch({
       type: 'CART_ADD_ITEM',
       payload: { ...item, quantity },
     });
   };
+  
 
   return (
-    <Card>
+    <Card className='hover'>
       <Link to={`/product/${product.slug}`}>
         <img src={product.image} className='card-img-top' alt={product.name} />
       </Link>
       <Card.Body>
         <Link className='namestyle' to={`/product/${product.slug}`}>
-          <Card.Title>{product.name}</Card.Title>
+          <Card.Title className='light'>{product.name}</Card.Title>
         </Link>
         <Rating rating={product.rating} numReviews={product.numReviews} />
         <Card.Title> </Card.Title>
+
         <Row>
           <Col>
             {' '}
-            <strong>${product.price}</strong>
+            {/* <div className='noline'> */}
+            <p className='big'>${product.price}</p>
+            {product.price < 1000 && <sup className='small'>.99</sup>}
+            {/* </div> */}
           </Col>
+        </Row>
 
-          {product.countInStock < 5 ? (
-            <Col style={{"color" : "red"}}> <strong>Only {product.countInStock} left</strong> </Col>
+        <div className='flat'>
+          {product.countInStock === 0 ? (
+            <Button variant='light' disabled>
+              Out of stock
+            </Button>
+          ) : (
+            <Button
+              style={{
+                backgroundColor: 'rgb(185, 56, 14)',
+                color: 'white',
+                marginTop: '5%',
+              }}
+              onClick={() => addToCartHandler(product)}
+              disabled={lowCount}
+            >
+              Add to cart
+            </Button>
+          )}
+
+          {/* <Card.Title className='light'>{product.name}</Card.Title> */}
+          {product.countInStock < 10 ? (
+            <Col className='low' style={{ color: 'rgb(185, 56, 14)' }}>
+              {' '}
+              <strong>{product.countInStock} left </strong> <IoIosFlame />
+            </Col>
           ) : (
             <Col></Col>
           )}
-        </Row>
-        {product.countInStock === 0 ? (
-          <Button variant='light' disabled>
-            Out of stock
-          </Button>
-        ) : (
-          <Button
-            style={{
-              backgroundColor: 'rgb(185, 56, 14)',
-              color: 'white',
-            }}
-            onClick={() => addToCartHandler(product)}
-            disabled={lowCount}
-          >
-            Add to cart
-            
-          </Button>
-        )}
+        </div>
       </Card.Body>
     </Card>
   );

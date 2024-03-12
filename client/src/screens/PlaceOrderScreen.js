@@ -57,6 +57,7 @@ export default function PlaceOrderScreen() {
       dispatch({ type: 'CREATE_REQUEST' });
 
 state.cart.cartItems.push(now)
+
       const { order } = await Axios.post(
         '/db/orders',
         {
@@ -67,6 +68,7 @@ state.cart.cartItems.push(now)
           shippingPrice: cart.shippingPrice,
           taxPrice: cart.taxPrice,
           totalPrice: cart.totalPrice,
+          quantity: {}
         },
         {
           headers: {
