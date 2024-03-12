@@ -77,41 +77,51 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.aggregate([
-      {
-        $group: {
-          _id: null,
-          numOrders: { $sum: 1 },
-          totalSales: { $sum: '$totalPrice' },
-        },
-      },
-    ]);
-    const users = await User.aggregate([
-      {
-        $group: {
-          _id: null,
-          numUsers: { $sum: 1 },
-        },
-      },
-    ]);
-    const dailyOrders = await Order.aggregate([
-      {
-        $group: {
-          _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-          orders: { $sum: 1 },
-          sales: { $sum: '$totalPrice' },
-        },
-      },
-      { $sort: { _id: 1 } },
-    ]);
-    const productCategories = await Product.aggregate([
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-        },
-      },
-    ]);
+    const orderQuery = `SELECT
+NULL AS _id,
+COUNT(*) AS numOrders,
+SUM(totalPrice) AS totalSales
+FROM orders;`;
+
+    const dataOrder = await pool.query(orderQuery);
+    const orders = dataOrder[0];
+
+    const usersQuery = `
+    SELECT null AS _id, COUNT(*) AS numUsers
+    FROM users`;
+    const dataUser = await pool.query(usersQuery);
+    const users = dataUser[0];
+
+    // const dailyOrders = await Order.aggregate([
+    //   {
+    //     $group: {
+    //       _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+    //       orders: { $sum: 1 },
+    //       sales: { $sum: '$totalPrice' },
+    //     },
+    //   },
+    //   { $sort: { _id: 1 } },
+    // ]);
+
+    const salesQuery = `SELECT
+  DATE(createdAt) AS _id,
+  COUNT(*) AS orders,
+  SUM(totalPrice) AS sales
+FROM orders
+GROUP BY DATE(createdAt)
+ORDER BY DATE(createdAt) ASC`;
+
+    const salesData = await pool.query(salesQuery);
+    const dailyOrders = salesData[0];
+
+    const categoriesQuery = `
+    SELECT title AS _id, COUNT(*) AS count
+    FROM categories
+    GROUP BY title;
+  `;
+    const data = await pool.query(categoriesQuery);
+    const productCategories = data[0];
+
     res.send({ users, orders, dailyOrders, productCategories });
   })
 );

@@ -77,41 +77,32 @@ productRouter.post(
 //   })
 // );
 
-productRouter.put(
+productRouter.post(
   '/:id',
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
+
+    // console.log(productId)
     // const query = 'SELECT * FROM products WHERE _id = ?';
     // const data = await pool.query(query, [productId]);
     // const product = data[0][0];
 
-    const updateQuery = `UPDATE products SET  name = ?, slug = ?,  price = ?,  image = ?, images = ?, category = ?,  brand = ?, countInStock = ?,  description = ?  WHERE  _id = ?`;
+    const updateQuery = `UPDATE products SET name = ?, slug = ?,  price = ?,  image = ?, category = ?,  brand = ?, countInStock = ?,  description = ? WHERE  _id = ?`;
 
-    // let name = req.body.name;
-    // let slug = req.body.slug;
-    // let price = req.body.price;
-    // let image = req.body.image;
-    // let images = req.body.images;
-    // let category = req.body.category;
-    // let brand = req.body.brand;
-    // let countInStock = req.body.countInStock;
-    // let description = req.body.description;
-
-    // if (product) {
-    await pool.query(updateQuery, [
+    const updateProduct = await pool.query(updateQuery, [
       req.body.name,
       req.body.slug,
       req.body.price,
       req.body.image,
-      req.body.images,
       req.body.category,
       req.body.brand,
       req.body.countInStock,
       req.body.description,
       productId,
     ]);
+
     res.send({ message: 'Product Updated' });
     // } else {
     //   res.status(404).send({ message: 'Product Not Found' });
@@ -124,9 +115,14 @@ productRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
+    const query = 'SELECT * FROM products WHERE _id= ?';
+    const data = await pool.query(query, [req.params.id]);
+    const product = data[0][0];
+
     if (product) {
-      await product.remove();
+      const deleteQuery = `DELETE FROM products
+      WHERE _id = ?`;
+      await pool.query(deleteQuery, [req.params.id]);
       res.send({ message: 'Product Deleted' });
     } else {
       res.status(404).send({ message: 'Product Not Found' });
@@ -200,7 +196,7 @@ productRouter.post(
         product.rating,
         productId,
       ]);
-
+      console.log(updatedProduct);
       res.status(201).send({
         message: 'Review Created',
         review: product.reviews[product.reviews.length - 1],
@@ -243,77 +239,15 @@ productRouter.get(
 productRouter.get(
   '/search',
   expressAsyncHandler(async (req, res) => {
-    const { query } = req;
-    const pageSize = query.pageSize || PAGE_SIZE;
-    const page = query.page || 1;
-    const category = query.category || '';
-    const price = query.price || '';
-    const rating = query.rating || '';
-    const order = query.order || '';
-    const searchQuery = query.query || '';
 
-    const queryFilter =
-      searchQuery && searchQuery !== 'all'
-        ? {
-            name: {
-              $regex: searchQuery,
-              $options: 'i',
-            },
-          }
-        : {};
-    const categoryFilter = category && category !== 'all' ? { category } : {};
-    const ratingFilter =
-      rating && rating !== 'all'
-        ? {
-            rating: {
-              $gte: Number(rating),
-            },
-          }
-        : {};
-    const priceFilter =
-      price && price !== 'all'
-        ? {
-            // 1-50
-            price: {
-              $gte: Number(price.split('-')[0]),
-              $lte: Number(price.split('-')[1]),
-            },
-          }
-        : {};
-    const sortOrder =
-      order === 'featured'
-        ? { featured: -1 }
-        : order === 'lowest'
-        ? { price: 1 }
-        : order === 'highest'
-        ? { price: -1 }
-        : order === 'toprated'
-        ? { rating: -1 }
-        : order === 'newest'
-        ? { createdAt: -1 }
-        : { _id: -1 };
 
-    const products = await Product.find({
-      ...queryFilter,
-      ...categoryFilter,
-      ...priceFilter,
-      ...ratingFilter,
-    })
-      .sort(sortOrder)
-      .skip(pageSize * (page - 1))
-      .limit(pageSize);
+    const category = req.query.category;
+    const searchQuery = `SELECT * FROM products WHERE category = ?`;
+    const data = await pool.query(searchQuery, [category]);
+    const products = data[0];
 
-    const countProducts = await Product.countDocuments({
-      ...queryFilter,
-      ...categoryFilter,
-      ...priceFilter,
-      ...ratingFilter,
-    });
     res.send({
       products,
-      countProducts,
-      page,
-      pages: Math.ceil(countProducts / pageSize),
     });
   })
 );
@@ -326,6 +260,7 @@ productRouter.get(
     const titles = data[0];
     const categories = titles.map((item) => item.title);
     res.send(categories);
+    
   })
 );
 

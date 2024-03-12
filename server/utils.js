@@ -90,7 +90,7 @@ export const sendEmail = async (email, subject, url) => {
     });
     //  res.send({ message: "We sent reset password link to your email." });
 
-    console.log('Email sent successfully');
+
   } catch (error) {
     console.log('Email not sent');
     console.log(error);
@@ -156,3 +156,5 @@ export const payOrderEmailTemplate = (order) => {
   </p>
   `;
 };
+
+
