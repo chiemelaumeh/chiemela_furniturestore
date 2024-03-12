@@ -37,8 +37,8 @@ import UserEditScreen from './screens/UserEditScreen';
 import MapScreen from './screens/MapScreen';
 import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
-import { MdOutlineLightMode } from "react-icons/md";
-import { MdOutlineDarkMode } from "react-icons/md";
+import { MdOutlineLightMode } from 'react-icons/md';
+import { MdOutlineDarkMode } from 'react-icons/md';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
@@ -56,7 +56,6 @@ function App() {
   };
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
- 
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -74,7 +73,6 @@ function App() {
   // } else {
   //   userInfo.isAdmin = false
   // }
-
 
   return (
     <BrowserRouter>
@@ -97,14 +95,12 @@ function App() {
                 <i className=' fas fa-bars'></i>
               </Button>
 
-          
               <LinkContainer style={{ color: 'white' }} to='/'>
                 <Navbar.Brand> Team 2 Furniture store</Navbar.Brand>
               </LinkContainer>
               <LinkContainer style={{ color: 'white' }} to='/'>
-                <Navbar.Brand> 
-
-                {/* {dark ? (
+                <Navbar.Brand>
+                  {/* {dark ? (
             
             <MdOutlineLightMode className="toggleButton" onClick={handleLight} />
           ) : (
@@ -150,7 +146,7 @@ function App() {
                       Sign In
                     </Link>
                   )}
-                  {userInfo && userInfo.isAdmin === "true" && (
+                  {userInfo && userInfo.isAdmin === 'true' && (
                     <NavDropdown title='Admin' id='admin-nav-dropdown'>
                       <LinkContainer to='/admin/dashboard'>
                         <NavDropdown.Item>Dashboard</NavDropdown.Item>

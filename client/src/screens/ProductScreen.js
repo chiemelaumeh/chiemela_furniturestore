@@ -184,7 +184,9 @@ function ProductScreen() {
                     <Col>Status:</Col>
                     <Col>
                       {product.countInStock > 0 ? (
-                        <Badge bg='success'>In Stock</Badge>
+                        <Badge bg='success'>
+                          In Stock ({product.countInStock})
+                        </Badge>
                       ) : (
                         <Badge bg='danger'>Unavailable</Badge>
                       )}

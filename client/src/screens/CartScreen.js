@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Store } from '../Store';
 import { Helmet } from 'react-helmet-async';
 import Row from 'react-bootstrap/Row';
@@ -13,20 +13,34 @@ import axios from 'axios';
 export default function CartScreen() {
   const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const [lowCount, setLowCount] = useState(false)
+  const [lowCount, setLowCount] = useState(false);
   const {
     cart: { cartItems },
   } = state;
+  console.log(lowCount);
+  const threshold = 10;
 
-  const updateCartHandler = async (item, quantity) => {
+  const updateCartHandler = async (item, quantity, threshold) => {
+    // console.log(state);
+    // console.log(quantity);
+
+    // console.log(threshold)
+    // const blower = () => {
+    if (item.countInStock < 10) {
+      setLowCount(true);
+    }
+    // }
+    console.log(item.quantity, item.countInStock);
+
     const { data } = await axios.get(`/db/products/${item._id}`);
     if (data.countInStock < quantity) {
       window.alert('Sorry. Product is out of stock');
       return;
     }
-    if (data.countInStock <= 10) {
+    if (item.countInStock - (item.quantity + 1) <= 10) {
       setLowCount(true);
     }
+
     ctxDispatch({
       type: 'CART_ADD_ITEM',
       payload: { ...item, quantity },
@@ -34,7 +48,7 @@ export default function CartScreen() {
   };
   const removeItemHandler = (item) => {
     ctxDispatch({ type: 'CART_REMOVE_ITEM', payload: item });
-    setLowCount(false)
+    setLowCount(false);
   };
 
   const checkoutHandler = () => {
@@ -64,13 +78,23 @@ export default function CartScreen() {
                         alt={item.name}
                         className='img-fluid rounded img-thumbnail'
                       ></img>{' '}
-                      <Link  className='namestyle' to={`/product/${item.slug}`}>{item.name}</Link>
+                      <Link className='namestyle' to={`/product/${item.slug}`}>
+                        {item.name}
+                      </Link>
                     </Col>
                     <Col md={3}>
                       <Button
-                        onClick={() =>
-                          updateCartHandler(item, item.quantity - 1)
-                        }
+                        onClick={() => {
+                          updateCartHandler(
+                            item,
+                            item.quantity - 1,
+                            threshold - 1
+                          );
+
+                          {
+                            setLowCount(false);
+                          }
+                        }}
                         variant='light'
                         disabled={item.quantity === 1}
                       >
@@ -79,10 +103,23 @@ export default function CartScreen() {
                       <span>{item.quantity}</span>{' '}
                       <Button
                         variant='light'
-                        onClick={() =>
-                          updateCartHandler(item, item.quantity + 1)
+                        onClick={() => {
+                          updateCartHandler(
+                            item,
+                            item.quantity + 1,
+                            threshold + 1
+                          );
+                          if (item.countInStock <= 10) {
+                            setLowCount(true);
+                            // console.log('d');
+                          }
+                        }}
+                        disabled={
+                          item.quantity === item.countInStock ||
+                          lowCount ||
+                          item.countInStock === 10 ||
+                          (lowCount && item.quantity === 1)
                         }
-                        disabled={item.quantity === item.countInStock || lowCount}
                       >
                         <i className='fas fa-plus-circle'></i>
                       </Button>
