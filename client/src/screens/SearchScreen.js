@@ -92,7 +92,7 @@ export default function SearchScreen() {
     const fetchData = async () => {
       try {
         const { data } = await axios.get(
-          `/db/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}`
+          `/db/products/search?category=${category}`
         );
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
@@ -103,7 +103,7 @@ export default function SearchScreen() {
       }
     };
     fetchData();
-  }, [category, error, order, page, price, query, rating]);
+  }, [category, error]);
 
   const [categories, setCategories] = useState([]);
   useEffect(() => {
@@ -135,77 +135,7 @@ export default function SearchScreen() {
         <title>Search Products</title>
       </Helmet>
       <Row>
-        <Col md={3}>
-          <h3>Department</h3>
-          <div>
-            <ul>
-              <li>
-                <Link
-                  className={'all' === category ? 'text-bold' : ''}
-                  to={getFilterUrl({ category: 'all' })}
-                >
-                  Any
-                </Link>
-              </li>
-              {categories.map((c) => (
-                <li key={c}>
-                  <Link
-                    className={c === category ? 'text-bold' : ''}
-                    to={getFilterUrl({ category: c })}
-                  >
-                    {c}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3>Price</h3>
-            <ul>
-              <li>
-                <Link
-                  className={'all' === price ? 'text-bold' : ''}
-                  to={getFilterUrl({ price: 'all' })}
-                >
-                  Any
-                </Link>
-              </li>
-              {prices.map((p) => (
-                <li key={p.value}>
-                  <Link
-                    to={getFilterUrl({ price: p.value })}
-                    className={p.value === price ? 'text-bold' : ''}
-                  >
-                    {p.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3>Avg. Customer Review</h3>
-            <ul>
-              {ratings.map((r) => (
-                <li key={r.name}>
-                  <Link
-                    to={getFilterUrl({ rating: r.rating })}
-                    className={`${r.rating}` === `${rating}` ? 'text-bold' : ''}
-                  >
-                    <Rating caption={' & up'} rating={r.rating}></Rating>
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  to={getFilterUrl({ rating: 'all' })}
-                  className={rating === 'all' ? 'text-bold' : ''}
-                >
-                  <Rating caption={' & up'} rating={0}></Rating>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </Col>
+        
         <Col md={9}>
           {loading ? (
             <LoadingBox></LoadingBox>
@@ -214,40 +144,8 @@ export default function SearchScreen() {
           ) : (
             <>
               <Row className="justify-content-between mb-3">
-                <Col md={6}>
-                  <div>
-                    {countProducts === 0 ? 'No' : countProducts} Results
-                    {query !== 'all' && ' : ' + query}
-                    {category !== 'all' && ' : ' + category}
-                    {price !== 'all' && ' : Price ' + price}
-                    {rating !== 'all' && ' : Rating ' + rating + ' & up'}
-                    {query !== 'all' ||
-                    category !== 'all' ||
-                    rating !== 'all' ||
-                    price !== 'all' ? (
-                      <Button
-                        variant="light"
-                        onClick={() => navigate('/search')}
-                      >
-                        <i className="fas fa-times-circle"></i>
-                      </Button>
-                    ) : null}
-                  </div>
-                </Col>
-                <Col className="text-end">
-                  Sort by{' '}
-                  <select
-                    value={order}
-                    onChange={(e) => {
-                      navigate(getFilterUrl({ order: e.target.value }));
-                    }}
-                  >
-                    <option value="newest">Newest Arrivals</option>
-                    <option value="lowest">Price: Low to High</option>
-                    <option value="highest">Price: High to Low</option>
-                    <option value="toprated">Avg. Customer Reviews</option>
-                  </select>
-                </Col>
+             
+            
               </Row>
               {products.length === 0 && (
                 <MessageBox>No Product Found</MessageBox>
