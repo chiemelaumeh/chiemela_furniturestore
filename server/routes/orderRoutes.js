@@ -58,6 +58,21 @@ orderRouter.post(
       isDelivered,
     ]);
 
+    const data = JSON.parse(orderItems[0]);
+
+    try {
+      for (const item of data) {
+        const { _id, quantity } = item;
+        console.log(_id, quantity);
+        const sql = `UPDATE products SET countInStock = countInStock - ? WHERE _id = ?`;
+        const result = await pool.query(sql, [quantity, _id]);
+        // console.log(`Updated countInStock for product with _id ${_id}`);
+      }
+    } catch (err) {
+      console.error('Error updating countInStock:', err);
+      res.status(500).send('Error updating countInStock');
+    }
+
     res.status(201).send({
       orderItems: orderItems,
       paymentMethod: paymentMethod,
@@ -71,6 +86,27 @@ orderRouter.post(
     });
   })
 );
+
+// orderRouter.post(
+//   '/updatestock',
+//   isAuth,
+//   expressAsyncHandler(async (req, res) => {
+//     const data = JSON.parse(req.body[0]);
+//     data.forEach(item => {
+//       const { _id, quantity } = item;
+//       const sql = `UPDATE product SET countInStock = countInStock - ? WHERE _id = ?`;
+//       connection.query(sql, [quantity, _id], (err, result) => {
+//         if (err) {
+//           console.error('Error updating countInStock:', err);
+//           res.status(500).send('Error updating countInStock');
+//           return;
+//         }
+//         console.log(`Updated countInStock for product with _id ${_id}`);
+//       });
+//     });
+//     res.send('Stock updated successfully');
+//   })
+// );
 
 orderRouter.get(
   '/summary',
