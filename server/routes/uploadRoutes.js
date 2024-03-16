@@ -21,7 +21,7 @@ const uploadRouter = express.Router();
 //       api_secret: process.env.CLOUDINARY_API_SECRET,
 //     });
 //     const streamUpload = (req) => {
-      
+
 //       return new Promise((resolve, reject) => {
 //         const stream = cloudinary.uploader.upload_stream((error, result) => {
 //           if (result) {
@@ -45,6 +45,7 @@ uploadRouter.post(
   isAdmin,
   upload.single('file'),
   async (req, res) => {
+    // console.log(upload.single('file'));
     try {
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -66,8 +67,8 @@ uploadRouter.post(
       };
 
       const result = await streamUpload(req);
-      console.log(result);
-      res.send(result);
+      // console.log(result);
+      // res.send(result);
     } catch (error) {
       console.error(error);
       res.status(500).send('Internal Server Error');

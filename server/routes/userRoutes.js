@@ -20,8 +20,9 @@ userRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const users = await User.find({});
-    res.send(users);
+    const users = await pool.query('SELECT * FROM users');
+
+    res.send(users[0]);
   })
 );
 
@@ -30,7 +31,9 @@ userRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
+    const user = await pool.query('SELECT * FROM users WHERE _id = ?', [
+      req.params.id,
+    ]);
     if (user) {
       res.send(user);
     } else {
@@ -83,12 +86,9 @@ userRouter.put(
 userRouter.post(
   '/forget-password',
   expressAsyncHandler(async (req, res) => {
-
     const query = 'SELECT * FROM users WHERE email= ?';
     const theuser = await pool.query(query, [req.body.email]);
     const user = theuser[0];
-
-
 
     if (user.length == 0) {
       res.status(404).send({ message: 'User not found' });
@@ -97,7 +97,7 @@ userRouter.post(
         expiresIn: '3h',
       });
       user.resetToken = token;
-      console.log(user)
+      console.log(user);
       // await user.save();
       // const query =
       // `UPDATE users SET name = ?, email = ?, password =? WHERE _id = ?`;
@@ -109,7 +109,7 @@ userRouter.post(
       //reset link
       console.log(`${baseUrl()}reset-password/${token}`);
 
-     await sendEmail(
+      await sendEmail(
         user.email,
         'Reset password',
         `${baseUrl()}/reset-password/${token}`
@@ -148,13 +148,18 @@ userRouter.put(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      user.isAdmin = Boolean(req.body.isAdmin);
-      const updatedUser = await user.save();
-      res.send({ message: 'User Updated', user: updatedUser });
+    const userId = req.params.id;
+    const updateQuery = `UPDATE users SET name = ?, email = ?,  isAdmin = ? WHERE  _id = ?`;
+
+    const updateUser = await pool.query(updateQuery, [
+      req.body.name,
+      req.body.email,
+      Boolean(req.body.isAdmin),
+      userId,
+    ]);
+
+    if (updateUser) {
+      res.send({ message: 'User Updated' });
     } else {
       res.status(404).send({ message: 'User Not Found' });
     }
@@ -166,17 +171,26 @@ userRouter.delete(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id);
-    if (user) {
-      if (user.email === 'admin@example.com') {
-        res.status(400).send({ message: 'Can Not Delete Admin User' });
-        return;
-      }
-      await user.remove();
-      res.send({ message: 'User Deleted' });
+    // const user = await User.findById(req.params.id);
+    const userId = req.params.id;
+    const checkQuery = `SELECT * FROM users WHERE _id = ?`;
+    const thisUser = await pool.query(checkQuery, [userId]);
+    const thisIsAdmin = thisUser[0][0].isAdmin;
+
+    if (thisIsAdmin === 'true') {
+      res.send({ message: 'Cannot delete Admin' });
+      return;
     } else {
-      res.status(404).send({ message: 'User Not Found' });
+      const deleteQuery = 'DELETE FROM users WHERE _id = ?';
+
+      const deleteUser = await pool.query(deleteQuery, [userId]);
+      res.send({ message: 'User Deleted' });
     }
+
+    // if (deleteUser) {
+    // } else {
+    //   res.status(404).send({ message: 'User Not Found' });
+    // }
   })
 );
 userRouter.post(
@@ -197,6 +211,7 @@ userRouter.post(
           isAdmin: user[0][0].isAdmin,
           token: generateToken(user[0][0]),
         });
+
         return;
       }
     }

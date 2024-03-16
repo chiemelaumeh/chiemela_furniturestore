@@ -67,12 +67,25 @@ app.use((err, req, res, next) => {
   });
 });
 
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "../client/build")));
-app.get('*', (req, res) =>
-  res.sendFile(path.join(__dirname, "../client/index.html"))
-  // res.json(dbinfo)
+// const __dirname = path.resolve();
+// app.use(express.static(path.join(__dirname, "../client/build")));
+app.get(
+  '*',
+  (req, res) =>
+    // res.json(dbinfo)
+
+    // res.setHeader('Content-Type', 'text/html');
+    res.send(
+      '<html><head><title>Hello, World!</title></head><body><h1>Hello, World!</h1></body></html>'
+    )
+  // return;
 );
+
+// app.get('*', (req, res) =>
+//   res.sendFile(path.join(__dirname, "../client/index.html"))
+//   // res.json(dbinfo)
+// );
+
 connectDb();
 app.use((err, req, res, next) => {
   res.status(500).send({ message: err.message });

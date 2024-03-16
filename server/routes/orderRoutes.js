@@ -42,7 +42,7 @@ orderRouter.post(
     let totalPrice = req.body.totalPrice;
     let user = req.user._id;
     let user_name = req.user.name;
-    let isPaid = 'false';
+    let isPaid = 'true';
     let isDelivered = 'false';
 
     await pool.query(insertQuery, [
@@ -166,14 +166,21 @@ orderRouter.get(
   '/mine',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id });
-    res.send(orders);
+    const query = 'SELECT * FROM orders WHERE user_id = ?';
+    const data = await pool.query(query, [req.user._id]);
+    // console.log(data);
+    // const orders = await Order.find({ user: req.user._id });
+    // res.send(data);
+    if (data) {
+      res.send(data[0]);
+    } else {
+      res.status(404).send({ message: 'Order Not Found' });
+    }
   })
 );
 
 orderRouter.get(
   '/:id',
-  isAuth,
   expressAsyncHandler(async (req, res) => {
     const orderId = req.params.id;
 
