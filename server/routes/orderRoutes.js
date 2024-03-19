@@ -4,6 +4,8 @@ import Order from '../models/orderModel.js';
 import User from '../models/userModel.js';
 import { pool } from '../db.js';
 import Product from '../models/productModel.js';
+import { sendEmail } from "../sendOrderMail.js";
+
 import { isAuth, isAdmin, mailgun, payOrderEmailTemplate } from '../utils.js';
 
 const orderRouter = express.Router();
@@ -13,11 +15,57 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-    // const orders = await Order.find().populate('user', 'name');
+// console.log(req.user)
+
+    
     const orders = await pool.query(`SELECT * from orders`);
     res.send(orders[0]);
   })
 );
+
+
+
+orderRouter.get(
+  '/refunds',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+// console.log(req.user)
+
+    
+    const refunds = await pool.query(`SELECT * from refunds`);
+    res.send(refunds[0]);
+  })
+);
+
+
+orderRouter.post('/refund',
+isAuth,
+expressAsyncHandler(async(req, res) => {
+
+  
+
+  const insertQuery = 
+  'INSERT INTO refunds (order_id, username, refundnote )VALUES(?,?,?);';
+  let orderId = req.body.orderId
+  let name= req.body.name
+  let refundnote = req.body.note
+ const data =  await pool.query(insertQuery, [
+   orderId,
+   name, 
+   refundnote
+
+    
+  ]);
+  res.status(201).send({
+    refundId: data,
+    
+  });
+
+}))
+
+
+
 
 orderRouter.post(
   '/',
@@ -72,7 +120,8 @@ orderRouter.post(
       console.error('Error updating countInStock:', err);
       res.status(500).send('Error updating countInStock');
     }
-
+    const url = "https://team2furniturestore.netlify.app/orderhistory"
+    await sendEmail(req.user.email, "Order has been created", url, req.user.name, totalPrice, orderItems)
     res.status(201).send({
       orderItems: orderItems,
       paymentMethod: paymentMethod,
@@ -85,6 +134,7 @@ orderRouter.post(
       isDelivered: isDelivered,
     });
   })
+  
 );
 
 // orderRouter.post(
@@ -195,6 +245,50 @@ orderRouter.get(
     }
   })
 );
+
+orderRouter.get(
+  '/refunds/:id',
+  expressAsyncHandler(async (req, res) => {
+    const refundId = req.params.id;
+
+    const query = 'SELECT * FROM refunds WHERE _id= ?';
+    const data = await pool.query(query, [refundId]);
+    const order = data[0][0].order_id;
+
+    const query2 = 'SELECT * FROM orders WHERE _id= ?';
+    const data2 = await pool.query(query2, [order]);
+    const refundOrders = data2[0][0];
+
+
+    if (refundOrders) {
+      res.send(refundOrders);
+    } else {
+      res.status(404).send({ message: 'Order Not Found' });
+    }
+  })
+);
+orderRouter.get(
+  '/refunds/note/:id',
+  expressAsyncHandler(async (req, res) => {
+    const refundId = req.params.id;
+
+    const query = 'SELECT * FROM refunds WHERE _id= ?';
+    const data = await pool.query(query, [refundId]);
+    const order = data[0][0].refundnote;
+
+    // console.log(order)
+    if (order) {
+      res.send(order);
+    } else {
+      res.status(404).send({ message: 'Order Not Found' });
+    }
+  })
+);
+
+
+
+
+
 
 orderRouter.put(
   '/:id/deliver',

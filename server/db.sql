@@ -10,8 +10,8 @@ Create table users(
 
  CREATE TABLE products (
   _id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name varchar(255) UNIQUE NOT NULL,
-  slug varchar(255) NOT NULL, 
+
+  order_id(255) BIGINT NOT NULL, 
   image varchar(225) NOT NULL, 
   brand varchar(255) NOT NULL, 
   createdAt DATETIME NULL DEFAULT NULL,
