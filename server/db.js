@@ -2,17 +2,18 @@ import dotenv from 'dotenv';
 import mysql from 'mysql2';
 dotenv.config();
 
-//Local Environment
-// export const pool = mysql
-//   .createPool({
-//     host: '127.0.0.1',
-//     user: 'root',
-//     password: '',
-//     database: 'localdb',
-//   })
-//   .promise();
 
-//Production Environment
+
+
+// export const pool = mysql.createPool({
+//     user: process.env.DATABASE_USER,
+//     host: process.env.DATABASE_HOST,
+//     password: process.env.DATABASE_PASSWORD,
+//     database: process.env.DATABASE_DATABASE,
+//     ssl: process.env.DATABASE_URL ?{ rejectUnauthorized: false } : false
+//   });
+  
+
 
 const DATABASE_URL = process.env.DATABASE_URL;
 export const pool = mysql.createPool(DATABASE_URL).promise();
