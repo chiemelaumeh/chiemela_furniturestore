@@ -5,6 +5,8 @@ import User from '../models/userModel.js';
 import { pool } from '../db.js';
 import Product from '../models/productModel.js';
 import { sendEmail } from "../sendOrderMail.js";
+import { sendApproval } from "../sendApprovedRefund.js";
+import { sendDenied } from "../sendDenyRefund.js";
 
 import { isAuth, isAdmin, mailgun, payOrderEmailTemplate } from '../utils.js';
 
@@ -33,7 +35,9 @@ orderRouter.get(
 // console.log(req.user)
 
     
-    const refunds = await pool.query(`SELECT * from refunds`);
+    const refunds = await pool.query(`SELECT *
+    FROM refunds
+    WHERE options IS NULL;`);
     res.send(refunds[0]);
   })
 );
@@ -63,6 +67,65 @@ expressAsyncHandler(async(req, res) => {
   });
 
 }))
+
+
+
+
+orderRouter.post(
+  '/refunds/decison/:id',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const refundId = req.params.id;
+    const  deci = req.body.deci;
+    console.log(refundId)
+    console.log(deci)
+    // const query = 'SELECT * FROM products WHERE _id = ?';
+    // const data = await pool.query(query, [productId]);
+    // const product = data[0][0];
+
+    const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
+
+    const updateProduct = await pool.query(updateQuery, [
+      deci,
+      refundId
+    ]);
+    const url = "https://team2furniturestore.netlify.app"
+    await sendApproval(req.user.email, "Refund Approved!😃", url, req.user.name, )
+    res.send({ message: 'Product Updated' });
+    // } else {
+    //   res.status(404).send({ message: 'Product Not Found' });
+    // }
+  })
+);
+orderRouter.post(
+  '/refunds/nodecison/:id',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const refundId = req.params.id;
+    const  deci = req.body.deci;
+  
+    // const query = 'SELECT * FROM products WHERE _id = ?';
+    // const data = await pool.query(query, [productId]);
+    // const product = data[0][0];
+
+    const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
+
+    const updateProduct = await pool.query(updateQuery, [
+      deci,
+      refundId
+    ]);
+    const url = "https://team2furniturestore.netlify.app"
+    await sendDenied(req.user.email, "Refund Denied😕", url, req.user.name, )
+
+    res.send({ message: 'Product Updated' });
+    // } else {
+    //   res.status(404).send({ message: 'Product Not Found' });
+    // }
+  })
+);
+
 
 
 
@@ -121,7 +184,7 @@ orderRouter.post(
       res.status(500).send('Error updating countInStock');
     }
     const url = "https://team2furniturestore.netlify.app/orderhistory"
-    await sendEmail(req.user.email, "Order has been created", url, req.user.name, totalPrice, orderItems)
+    await sendEmail(req.user.email, "Order has been created📦", url, req.user.name, totalPrice, orderItems)
     res.status(201).send({
       orderItems: orderItems,
       paymentMethod: paymentMethod,
@@ -267,6 +330,27 @@ orderRouter.get(
     }
   })
 );
+
+
+orderRouter.get(
+  '/refunds/options/:id',
+  expressAsyncHandler(async (req, res) => {
+    const refundId = req.params.id;
+
+    const query = 'SELECT * FROM refunds WHERE order_id= ?';
+    const data = await pool.query(query, [refundId]);
+    const order = data[0][0];
+
+    // console.log(order)
+    if (order) {
+      res.send(order);
+    } else {
+      return
+      res.status(404).send({ message: 'Order Not Found' });
+    }
+  })
+);
+
 orderRouter.get(
   '/refunds/note/:id',
   expressAsyncHandler(async (req, res) => {
@@ -274,7 +358,7 @@ orderRouter.get(
 
     const query = 'SELECT * FROM refunds WHERE _id= ?';
     const data = await pool.query(query, [refundId]);
-    const order = data[0][0].refundnote;
+    const order = data[0][0];
 
     // console.log(order)
     if (order) {
