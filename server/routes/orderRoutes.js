@@ -50,13 +50,15 @@ expressAsyncHandler(async(req, res) => {
   
 
   const insertQuery = 
-  'INSERT INTO refunds (order_id, username, refundnote )VALUES(?,?,?);';
+  'INSERT INTO refunds (order_id, username, email, refundnote )VALUES(?,?,?,?);';
   let orderId = req.body.orderId
   let name= req.body.name
   let refundnote = req.body.note
+  let email = req.body.email
  const data =  await pool.query(insertQuery, [
    orderId,
-   name, 
+   name,
+   email, 
    refundnote
 
     
@@ -84,14 +86,18 @@ orderRouter.post(
     // const data = await pool.query(query, [productId]);
     // const product = data[0][0];
 
-    const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
+    const customerQuery = `SELECT * FROM refunds WHERE _id = ?`
+    
+    const customerEmailObject = await pool.query(customerQuery, [refundId])
 
+    const customerEmail =  customerEmailObject[0][0].email
+    const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
     const updateProduct = await pool.query(updateQuery, [
       deci,
       refundId
     ]);
     const url = "https://team2furniturestore.netlify.app"
-    await sendApproval(req.user.email, "Refund Approved!😃", url, req.user.name, )
+    await sendApproval(customerEmail, "Refund Approved!😃", url, req.user.name, )
     res.send({ message: 'Product Updated' });
     // } else {
     //   res.status(404).send({ message: 'Product Not Found' });
@@ -109,7 +115,11 @@ orderRouter.post(
     // const query = 'SELECT * FROM products WHERE _id = ?';
     // const data = await pool.query(query, [productId]);
     // const product = data[0][0];
+    const customerQuery = `SELECT * FROM refunds WHERE _id = ?`
+    
+    const customerEmailObject = await pool.query(customerQuery, [refundId])
 
+    const customerEmail =  customerEmailObject[0][0].email
     const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
 
     const updateProduct = await pool.query(updateQuery, [
@@ -117,7 +127,7 @@ orderRouter.post(
       refundId
     ]);
     const url = "https://team2furniturestore.netlify.app"
-    await sendDenied(req.user.email, "Refund Denied😕", url, req.user.name, )
+    await sendDenied(customerEmail, "Refund Denied😕", url, req.user.name, )
 
     res.send({ message: 'Product Updated' });
     // } else {
