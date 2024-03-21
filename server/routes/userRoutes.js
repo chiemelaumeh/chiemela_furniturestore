@@ -4,6 +4,7 @@ import { pool } from '../db.js';
 import expressAsyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
+import { sendSignUpEmail } from '../sendSignUpEmail.js';
 import {
   isAuth,
   isAdmin,
@@ -256,7 +257,8 @@ userRouter.post(
     let password = bcrypt.hashSync(req.body.password);
 
     const user = await pool.query(query, [name, email, password]);
-
+    const url = "https://team2furniturestore.netlify.app"
+    await sendSignUpEmail(email, `Welcome ${name}!`, url, name, )
     res.send({
       _id: user.insertId,
       name: name,

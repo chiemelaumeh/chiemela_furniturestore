@@ -2,7 +2,7 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const sendEmail = async (email, subject, url, user, totalPrice) => {
+export const sendSignUpEmail = async (email, subject, url, user, ) => {
   try {
     const transporter = nodemailer.createTransport({
       // host: process.env.HOST,
@@ -41,7 +41,7 @@ export const sendEmail = async (email, subject, url, user, totalPrice) => {
             <a href="" style="font-size:1.4em;color: orangered;text-decoration:none;font-weight:600">Team2FurnitureStore</a>
           </div>
           <p style="font-size:2em">Hi, ${user}</p>
-          <p style="font-size:1.2em">Thank you for choosing Team2furniture as your supplier of the best home decor on the planet, we hope your experience was a pleasant one. The total Price of your order was $${totalPrice}. Feel free to go over the details of your order at ${url} </p>
+          <p style="font-size:1.2em">Thank you for creating an account on our store. We hope you find the best furniture here! You can access your account at ${url}, Cheers! </p>
       
 
 
