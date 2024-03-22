@@ -1,9 +1,7 @@
 import express from 'express';
 import expressAsyncHandler from 'express-async-handler';
 import Order from '../models/orderModel.js';
-import User from '../models/userModel.js';
 import { pool } from '../db.js';
-import Product from '../models/productModel.js';
 import { sendEmail } from "../sendOrderMail.js";
 import { sendApproval } from "../sendApprovedRefund.js";
 import { sendDenied } from "../sendDenyRefund.js";
@@ -17,14 +15,11 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-// console.log(req.user)
 
-    
     const orders = await pool.query(`SELECT * from orders`);
     res.send(orders[0]);
   })
 );
-
 
 
 orderRouter.get(
@@ -32,9 +27,7 @@ orderRouter.get(
   isAuth,
   isAdmin,
   expressAsyncHandler(async (req, res) => {
-// console.log(req.user)
 
-    
     const refunds = await pool.query(`SELECT *
     FROM refunds
     WHERE options IS NULL;`);
@@ -47,8 +40,6 @@ orderRouter.post('/refund',
 isAuth,
 expressAsyncHandler(async(req, res) => {
 
-  
-
   const insertQuery = 
   'INSERT INTO refunds (order_id, username, email, refundnote )VALUES(?,?,?,?);';
   let orderId = req.body.orderId
@@ -60,8 +51,6 @@ expressAsyncHandler(async(req, res) => {
    name,
    email, 
    refundnote
-
-    
   ]);
   res.status(201).send({
     refundId: data,
@@ -80,30 +69,57 @@ orderRouter.post(
   expressAsyncHandler(async (req, res) => {
     const refundId = req.params.id;
     const  deci = req.body.deci;
-    console.log(refundId)
-    console.log(deci)
-    // const query = 'SELECT * FROM products WHERE _id = ?';
-    // const data = await pool.query(query, [productId]);
-    // const product = data[0][0];
-
+    const refundAdmin = req.user.name
+   
+ 
     const customerQuery = `SELECT * FROM refunds WHERE _id = ?`
     
     const customerEmailObject = await pool.query(customerQuery, [refundId])
 
     const customerEmail =  customerEmailObject[0][0].email
+    const customerName =  customerEmailObject[0][0].username
     const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
     const updateProduct = await pool.query(updateQuery, [
       deci,
       refundId
     ]);
+    const updateAdminQuery = `UPDATE refunds SET admin = ?  WHERE  _id = ?`;
+    const updateAdmin = await pool.query(updateAdminQuery,[
+      refundAdmin,
+      refundId
+    ]);
+    const customerOrderRefund = customerEmailObject[0][0].order_id
+    const findOrderQuery= `SELECT * FROM orders WHERE _id = ?`
+    
+    const theRefundOrder = await pool.query(findOrderQuery, [customerOrderRefund])
+const theOrder = theRefundOrder[0][0]
+const data = theOrder.orderItems
+
+
+try {
+  for (const item of data) {
+    const { _id, quantity } = item;
+
+    const sql = `UPDATE products SET countInStock = countInStock + ? WHERE _id = ?`;
+    const result = await pool.query(sql, [quantity, _id]);
+
+  }
+} catch (err) {
+  console.error('Error updating countInStock:', err);
+  res.status(500).send('Error updating countInStock');
+}
+
+    const deleteQuery = 'DELETE FROM orders WHERE _id = ?';
+    await pool.query(deleteQuery, [customerOrderRefund]);
     const url = "https://team2furniturestore.netlify.app"
-    await sendApproval(customerEmail, "Refund Approved!😃", url, req.user.name, )
+    await sendApproval(customerEmail, "Refund Approved!😃", url, customerName )
     res.send({ message: 'Product Updated' });
-    // } else {
-    //   res.status(404).send({ message: 'Product Not Found' });
-    // }
+    
   })
 );
+
+
+
 orderRouter.post(
   '/refunds/nodecison/:id',
   isAuth,
@@ -111,34 +127,32 @@ orderRouter.post(
   expressAsyncHandler(async (req, res) => {
     const refundId = req.params.id;
     const  deci = req.body.deci;
-  
-    // const query = 'SELECT * FROM products WHERE _id = ?';
-    // const data = await pool.query(query, [productId]);
-    // const product = data[0][0];
+    const refundAdmin = req.user.name
+
+
     const customerQuery = `SELECT * FROM refunds WHERE _id = ?`
     
     const customerEmailObject = await pool.query(customerQuery, [refundId])
 
     const customerEmail =  customerEmailObject[0][0].email
+    const customerName =  customerEmailObject[0][0].username
     const updateQuery = `UPDATE refunds SET options = ?  WHERE  _id = ?`;
 
     const updateProduct = await pool.query(updateQuery, [
       deci,
       refundId
     ]);
+    const updateAdminQuery = `UPDATE refunds SET admin = ?  WHERE  _id = ?`;
+    const updateAdmin = await pool.query(updateAdminQuery,[
+      refundAdmin,
+      refundId
+    ]);
     const url = "https://team2furniturestore.netlify.app"
-    await sendDenied(customerEmail, "Refund Denied😕", url, req.user.name, )
+    await sendDenied(customerEmail, "Refund Denied😕", url, customerName )
 
     res.send({ message: 'Product Updated' });
-    // } else {
-    //   res.status(404).send({ message: 'Product Not Found' });
-    // }
   })
 );
-
-
-
-
 
 orderRouter.post(
   '/',
@@ -151,9 +165,6 @@ orderRouter.post(
       ...x,
       product: x._id,
     }));
-    // console.log(orderItem)
-    // let shippingAddress = req.body.shippingAddress;
-    // console.log(orderItem)
     let orderItems = [JSON.stringify(orderItem)];
     // let orderItem = order.orderItems.push(orderItemss)
     let paymentMethod = req.body.paymentMethod;
@@ -184,7 +195,7 @@ orderRouter.post(
     try {
       for (const item of data) {
         const { _id, quantity } = item;
-        console.log(_id, quantity);
+ 
         const sql = `UPDATE products SET countInStock = countInStock - ? WHERE _id = ?`;
         const result = await pool.query(sql, [quantity, _id]);
         // console.log(`Updated countInStock for product with _id ${_id}`);
@@ -250,18 +261,6 @@ FROM orders;`;
     FROM users`;
     const dataUser = await pool.query(usersQuery);
     const users = dataUser[0];
-
-    // const dailyOrders = await Order.aggregate([
-    //   {
-    //     $group: {
-    //       _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
-    //       orders: { $sum: 1 },
-    //       sales: { $sum: '$totalPrice' },
-    //     },
-    //   },
-    //   { $sort: { _id: 1 } },
-    // ]);
-
     const salesQuery = `SELECT
   DATE(createdAt) AS _id,
   COUNT(*) AS orders,
@@ -378,11 +377,6 @@ orderRouter.get(
     }
   })
 );
-
-
-
-
-
 
 orderRouter.put(
   '/:id/deliver',
