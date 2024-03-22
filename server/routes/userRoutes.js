@@ -5,12 +5,13 @@ import expressAsyncHandler from 'express-async-handler';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import { sendSignUpEmail } from '../sendSignUpEmail.js';
+import { sendForgotPass } from '../sendForgotPass.js';
 import {
   isAuth,
   isAdmin,
   generateToken,
   baseUrl,
-  sendEmail,
+
   errorHandler,
 } from '../utils.js';
 
@@ -108,13 +109,16 @@ userRouter.post(
 
       //  ]);
       //reset link
-      console.log(`${baseUrl()}reset-password/${token}`);
-
-      await sendEmail(
-        user.email,
+      // console.log(`${baseUrl()}reset-password/${token}`);
+const email = user[0].email
+const username = user[0].name
+      await sendForgotPass(
+        email,
+        username,
         'Reset password',
         `${baseUrl()}/reset-password/${token}`
       );
+   
       res.send({ message: 'We sent reset password link to your email.' });
     }
   })
