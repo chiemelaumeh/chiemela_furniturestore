@@ -254,22 +254,31 @@ userRouter.post(
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
-    const query = 'INSERT INTO users (name, email, password )VALUES(?, ?, ?);';
+    try {
+      
+      const query = 'INSERT INTO users (name, email, password )VALUES(?, ?, ?);';
+  
+      let name = req.body.name;
+      let email = req.body.email;
+      let password = bcrypt.hashSync(req.body.password);
+  
+      const user = await pool.query(query, [name, email, password]);
 
-    let name = req.body.name;
-    let email = req.body.email;
-    let password = bcrypt.hashSync(req.body.password);
+      const url = "https://team2furniturestore.netlify.app"
+      await sendSignUpEmail(email, `Welcome ${name}!`, url, name, )
+      // res.status(201).send({
+      //   _id: user[0].insertId,
+      //   name: name,
+      //   email: email,
+      //   isAdmin: "false",
+      //   token: generateToken(user),
+      //   message: 'Account created! Now sign in...'
+      // });
+      res.status(201).send({ message: 'Account created! Now sign in' });
+    } catch (error) {
+      res.send({errno: error.errno})
 
-    const user = await pool.query(query, [name, email, password]);
-    const url = "https://team2furniturestore.netlify.app"
-    await sendSignUpEmail(email, `Welcome ${name}!`, url, name, )
-    res.send({
-      _id: user.insertId,
-      name: name,
-      email: email,
-      isAdmin: false,
-      token: generateToken(user),
-    });
+    }
   })
 );
 
