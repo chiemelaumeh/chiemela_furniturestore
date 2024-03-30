@@ -41,6 +41,8 @@ export const sendForgotPass = async (email, username, subject, url ) => {
             <a href="" style="font-size:1.4em;color: orangered;text-decoration:none;font-weight:600">Team2FurnitureStore</a>
           </div>
           <p style="font-size:2em">Hi, ${username}</p>
+          <p style="font-size:1.2em">The password reset link below expires in 10 minutes </p>
+
           <p style="font-size:1.2em">Click this link to reset your password ${url} </p>
       
 

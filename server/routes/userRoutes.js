@@ -50,7 +50,7 @@ userRouter.put(
   expressAsyncHandler(async (req, res) => {
     const query = 'SELECT * FROM users WHERE _id= ?';
     const user = await pool.query(query, [req.user._id]);
-    console.log(user[0]);
+
 
     if (user) {
       user.name = req.body.name || user.name;
@@ -94,21 +94,28 @@ userRouter.post(
 
     if (user.length == 0) {
       res.status(404).send({ message: 'User not found' });
+      return;
     } else {
+      const emptyToken = user[0].reset_token === "" ? true : false;
+      if(emptyToken === false) {
+        res.send({ message: 'We already sent you a reset link, try again in 10 minutes' });
+        return;
+      }
+
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '3h',
+        expiresIn: '10m',
       });
-      user.resetToken = token;
-      console.log(user);
-      // await user.save();
-      // const query =
-      // `UPDATE users SET name = ?, email = ?, password =? WHERE _id = ?`;
+      // user.resetToken = token;
 
-      // const updatedUser = await pool.query(query, [
-      //   name, email, password, req.user._id
+   
+      const query =
+      `UPDATE users SET reset_token = ?  WHERE _id = ?`;
 
-      //  ]);
-      //reset link
+      const updatedUser = await pool.query(query, [
+        token, user[0]._id
+
+       ]);
+
       // console.log(`${baseUrl()}reset-password/${token}`);
 const email = user[0].email
 const username = user[0].name
@@ -117,7 +124,11 @@ const username = user[0].name
         username,
         'Reset password',
         `${baseUrl()}/reset-password/${token}`
+     
       );
+
+
+
    
       res.send({ message: 'We sent reset password link to your email.' });
     }
@@ -131,14 +142,28 @@ userRouter.post(
       if (err) {
         res.status(401).send({ message: 'Invalid Token' });
       } else {
-        const user = await User.findOne({ resetToken: req.body.token });
+    
+        const user = await pool.query('SELECT * FROM users WHERE reset_token = ?', [
+          req.body.token,
+        ]);
+       
         if (user) {
           if (req.body.password) {
-            user.password = bcrypt.hashSync(req.body.password, 8);
-            await user.save();
+            const newPassword = bcrypt.hashSync(req.body.password, 8);
+            const query =
+            `UPDATE users SET password = ?  WHERE _id = ?`;
+      
+            const updatedUser = await pool.query(query, [
+              newPassword, user[0][0]._id
+    
+             ]);
             res.send({
               message: 'Password reseted successfully',
             });
+
+            const deleteTokenQuery = `UPDATE users SET reset_token = '' WHERE _id = ?;`
+            const deleteUser = await pool.query(deleteTokenQuery, [user[0][0]._id]);
+
           }
         } else {
           res.status(404).send({ message: 'User not found' });
@@ -192,38 +217,9 @@ userRouter.delete(
       res.send({ message: 'User Deleted' });
     }
 
-    // if (deleteUser) {
-    // } else {
-    //   res.status(404).send({ message: 'User Not Found' });
-    // }
   })
 );
-// userRouter.post(
-//   '/signin',
-//   expressAsyncHandler(async (req, res) => {
-//     // const user = await User.findOne({ email: req.body.email });
-//     const { email } = req.body;
 
-//     const query = 'SELECT * FROM users WHERE email= ?';
-//     const user = await pool.query(query, [email]);
-
-// // console.log(req.)
-//     if (user) {
-//       if (bcrypt.compareSync(req.body.password, user[0][0].password)) {
-//         res.send({
-//           _id: user[0][0]._id,
-//           name: user[0][0].name,
-//           email: user[0][0].email,
-//           isAdmin: user[0][0].isAdmin,
-//           token: generateToken(user[0][0]),
-//         });
-
-//         return;
-//       }
-//     }
-//     res.status(401).send({ message: 'Invalid email or password' });
-//   })
-// );
 
 userRouter.post(
   '/signin',

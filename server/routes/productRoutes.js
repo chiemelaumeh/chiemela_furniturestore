@@ -50,32 +50,7 @@ productRouter.post(
   })
 );
 
-// productRouter.put(
-//   '/:id',
-//   isAuth,
-//   isAdmin,
-//   expressAsyncHandler(async (req, res) => {
-//     const productId = req.params.id;
-//     const query = 'SELECT * FROM products WHERE _id= ?';
-//     const data = await pool.query(query, [productId]);
-//     const product = data[0][0];
-//     if (product) {
-//       product.name = req.body.name;
-//       product.slug = req.body.slug;
-//       product.price = req.body.price;
-//       product.image = req.body.image;
-//       product.images = req.body.images;
-//       product.category = req.body.category;
-//       product.brand = req.body.brand;
-//       product.countInStock = req.body.countInStock;
-//       product.description = req.body.description;
-//       await product.save();
-//       res.send({ message: 'Product Updated' });
-//     } else {
-//       res.status(404).send({ message: 'Product Not Found' });
-//     }
-//   })
-// );
+
 
 productRouter.post(
   '/:id',
@@ -83,12 +58,6 @@ productRouter.post(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
-
-    // console.log(productId)
-    // const query = 'SELECT * FROM products WHERE _id = ?';
-    // const data = await pool.query(query, [productId]);
-    // const product = data[0][0];
-
     const updateQuery = `UPDATE products SET name = ?, slug = ?,  price = ?,  image = ?, category = ?,  brand = ?, countInStock = ?,  description = ? WHERE  _id = ?`;
 
     const updateProduct = await pool.query(updateQuery, [
@@ -164,7 +133,6 @@ productRouter.post(
       const stoi = parseInt(req.params.id);
 
       if (!idsArray.includes(stoi)) {
-        // console.log(`The array contains the value.`);
         return res
           .status(400)
           .send({ message: 'You have not purchased this item' });
@@ -181,9 +149,7 @@ productRouter.post(
       product.rating =
         product.reviews.reduce((a, c) => c.rating + a, 0) /
         product.reviews.length;
-      // console.log(product);
-      // const updatedProduct = await product.save();
-
+      
       const updateQuery = `
       UPDATE products 
       SET reviews = ?, numReviews = ?, rating = ?
@@ -196,7 +162,7 @@ productRouter.post(
         product.rating,
         productId,
       ]);
-      console.log(updatedProduct);
+
       res.status(201).send({
         message: 'Review Created',
         review: product.reviews[product.reviews.length - 1],
@@ -239,11 +205,23 @@ productRouter.get(
 productRouter.get(
   '/search',
   expressAsyncHandler(async (req, res) => {
-
-
     const category = req.query.category;
     const searchQuery = `SELECT * FROM products WHERE category = ?`;
     const data = await pool.query(searchQuery, [category]);
+    const products = data[0];
+
+    res.send({
+      products,
+    });
+  })
+);
+productRouter.get(
+  '/bsearch',
+  expressAsyncHandler(async (req, res) => {
+    const brand = req.query.brand;
+    const searchQuery = `SELECT * FROM products WHERE brand = ?`;
+    const data = await pool.query(searchQuery, [brand]);
+    
     const products = data[0];
 
     res.send({
@@ -261,6 +239,32 @@ productRouter.get(
     const categories = titles.map((item) => item.title);
     res.send(categories);
     
+  })
+);
+productRouter.get(
+  '/brands',
+  expressAsyncHandler(async (req, res) => {
+    const query = 'SELECT DISTINCT brand FROM products';
+    const data = await pool.query(query);
+    const brands = data[0];
+    const brandNamesArray = brands.map(obj => obj.brand);
+    res.send(brandNamesArray);
+    
+  })
+);
+
+productRouter.get(
+  '/rallratings',
+  expressAsyncHandler(async (req, res) => {
+    const brand = req.query.brand;
+    const searchQuery = `SELECT * FROM products WHERE rating= ?`;
+    const data = await pool.query(searchQuery, [brand]);
+    
+    const products = data[0];
+
+    res.send({
+      products,
+    });
   })
 );
 
