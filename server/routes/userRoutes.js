@@ -103,7 +103,7 @@ userRouter.post(
       }
 
       const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '10m',
+        expiresIn: '9m',
       });
       // user.resetToken = token;
 
@@ -127,6 +127,12 @@ const username = user[0].name
      
       );
 
+setTimeout(async function() {
+  const deleteTokenQuery = `UPDATE users SET reset_token = '' WHERE _id = ?;`
+  const deleteUser = await pool.query(deleteTokenQuery, [user[0]._id]);
+
+
+}, 10 * 60 * 1000); 
 
 
    
