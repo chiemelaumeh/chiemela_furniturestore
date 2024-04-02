@@ -258,24 +258,18 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     try {
       
-      const query = 'INSERT INTO users (name, email, password )VALUES(?, ?, ?);';
+      const query = 'INSERT INTO users (name, email, username, password )VALUES(?, ?, ?, ?);';
   
       let name = req.body.name;
       let email = req.body.email;
+      let username= req.body.username;
       let password = bcrypt.hashSync(req.body.password);
   
-      const user = await pool.query(query, [name, email, password]);
+      const user = await pool.query(query, [name, email, username, password]);
 
       const url = "https://team2furniturestore.netlify.app"
       await sendSignUpEmail(email, `Welcome ${name}!`, url, name, )
-      // res.status(201).send({
-      //   _id: user[0].insertId,
-      //   name: name,
-      //   email: email,
-      //   isAdmin: "false",
-      //   token: generateToken(user),
-      //   message: 'Account created! Now sign in...'
-      // });
+     
       res.status(201).send({ message: 'Account created! Now sign in' });
     } catch (error) {
       res.send({errno: error.errno})
