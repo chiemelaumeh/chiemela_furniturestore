@@ -256,11 +256,20 @@ FROM orders;`;
     const dataOrder = await pool.query(orderQuery);
     const orders = dataOrder[0];
 
+    // const usersQuery = `
+    // SELECT null AS _id, COUNT(*) AS numUsers
+    // FROM users`;
+    // const dataUser = await pool.query(usersQuery);
+    // const users = dataUser[0];
+
     const usersQuery = `
-    SELECT null AS _id, COUNT(*) AS numUsers
-    FROM users`;
+    SELECT * FROM users`;
     const dataUser = await pool.query(usersQuery);
     const users = dataUser[0];
+
+    
+
+    
     const salesQuery = `SELECT
   DATE(createdAt) AS _id,
   COUNT(*) AS orders,
