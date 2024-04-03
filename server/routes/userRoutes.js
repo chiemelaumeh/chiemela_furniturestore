@@ -272,7 +272,8 @@ userRouter.post(
      
       res.status(201).send({ message: 'Account created! Now sign in' });
     } catch (error) {
-      res.send({errno: error.errno})
+      // res.send({errno: error.errno})
+      res.send({error})
 
     }
   })
