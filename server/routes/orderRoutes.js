@@ -21,6 +21,19 @@ orderRouter.get(
   })
 );
 
+orderRouter.get(
+  '/oneorder',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const query = 'SELECT * FROM orders WHERE user_id = ? ORDER BY createdAt DESC  LIMIT 1;';
+    const data = await pool.query(query, [req.user._id]);  
+    if (data) {
+      res.send(data[0]);
+    } else {
+      res.status(404).send({ message: 'Order Not Found' });
+    }
+  })
+);
 
 orderRouter.get(
   '/refunds',
@@ -177,7 +190,7 @@ orderRouter.post(
     let isPaid = 'true';
     let isDelivered = 'false';
 
-    await pool.query(insertQuery, [
+  const result =  await pool.query(insertQuery, [
       orderItems,
       paymentMethod,
       itemsPrice,
@@ -189,6 +202,7 @@ orderRouter.post(
       isPaid,
       isDelivered,
     ]);
+console.log(result)
 
     const data = JSON.parse(orderItems[0]);
 
@@ -198,7 +212,7 @@ orderRouter.post(
  
         const sql = `UPDATE products SET countInStock = countInStock - ? WHERE _id = ?`;
         const result = await pool.query(sql, [quantity, _id]);
-        // console.log(`Updated countInStock for product with _id ${_id}`);
+     
       }
     } catch (err) {
       console.error('Error updating countInStock:', err);
@@ -216,31 +230,13 @@ orderRouter.post(
       user: user,
       isPaid: isPaid,
       isDelivered: isDelivered,
+      // orderId,
     });
   })
   
 );
 
-// orderRouter.post(
-//   '/updatestock',
-//   isAuth,
-//   expressAsyncHandler(async (req, res) => {
-//     const data = JSON.parse(req.body[0]);
-//     data.forEach(item => {
-//       const { _id, quantity } = item;
-//       const sql = `UPDATE product SET countInStock = countInStock - ? WHERE _id = ?`;
-//       connection.query(sql, [quantity, _id], (err, result) => {
-//         if (err) {
-//           console.error('Error updating countInStock:', err);
-//           res.status(500).send('Error updating countInStock');
-//           return;
-//         }
-//         console.log(`Updated countInStock for product with _id ${_id}`);
-//       });
-//     });
-//     res.send('Stock updated successfully');
-//   })
-// );
+
 
 orderRouter.get(
   '/summary',

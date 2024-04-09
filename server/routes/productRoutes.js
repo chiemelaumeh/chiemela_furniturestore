@@ -142,6 +142,7 @@ productRouter.post(
         name: req.user.name,
         rating: Number(req.body.rating),
         comment: req.body.comment,
+        id:req.user._id
       };
 
       product.reviews.push(review);
