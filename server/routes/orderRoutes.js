@@ -174,7 +174,7 @@ orderRouter.post(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const insertQuery =
-      'INSERT INTO orders (orderItems, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, user_id, user_name, isPaid, isDelivered )VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+      'INSERT INTO orders (orderItems, paymentMethod, itemsPrice, shippingPrice, taxPrice, totalPrice, user_id, user_name, realUser, isPaid, isDelivered )VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
     // console.log(req.body.orderItems)
     let orderItem = req.body.orderItems.map((x) => ({
       ...x,
@@ -189,6 +189,7 @@ orderRouter.post(
     let totalPrice = req.body.totalPrice;
     let user = req.user._id;
     let user_name = req.user.name;
+    let realUser = req.user.username
     let isPaid = 'true';
     let isDelivered = 'false';
 
@@ -201,6 +202,7 @@ orderRouter.post(
       totalPrice,
       user,
       user_name,
+      realUser,
       isPaid,
       isDelivered,
     ]);
