@@ -58,6 +58,7 @@ productRouter.post(
   isAdmin,
   expressAsyncHandler(async (req, res) => {
     const productId = req.params.id;
+   
     const updateQuery = `UPDATE products SET name = ?, slug = ?,  price = ?,  image = ?, category = ?,  brand = ?, countInStock = ?,  description = ? WHERE  _id = ?`;
 
     const updateProduct = await pool.query(updateQuery, [
@@ -78,6 +79,32 @@ productRouter.post(
     // }
   })
 );
+
+
+productRouter.post(
+  '/restock/:id',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const productId = req.params.id;
+// let stringer = productId.toString()
+
+    const updateQuery = `UPDATE products SET countInStock = ? WHERE  _id = ?`;
+
+    const updateProduct = await pool.query(updateQuery, [
+    
+      req.body.value,
+
+      productId,
+    ]);
+
+    res.send({ message: 'Product Updated' });
+    // } else {
+    //   res.status(404).send({ message: 'Product Not Found' });
+    // }
+  })
+);
+
 
 productRouter.delete(
   '/:id',
