@@ -21,6 +21,8 @@ orderRouter.get(
   })
 );
 
+
+
 orderRouter.get(
   '/oneorder',
   isAuth,
@@ -202,7 +204,7 @@ orderRouter.post(
       isPaid,
       isDelivered,
     ]);
-console.log(result)
+
 
     const data = JSON.parse(orderItems[0]);
 

@@ -9,6 +9,7 @@ import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import uploadRouter from './routes/uploadRoutes.js';
+import reportRouter from './routes/reportRoutes.js';
 
 dotenv.config();
 mongoose.set('strictQuery', false);
@@ -55,6 +56,7 @@ app.use('/db/seed', seedRouter);
 app.use('/db/products', productRouter);
 app.use('/db/users', userRouter);
 app.use('/db/orders', orderRouter);
+app.use('/db/reports', reportRouter);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
