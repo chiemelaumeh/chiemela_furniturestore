@@ -16,7 +16,7 @@ uploadRouter.post(
   isAdmin,
   upload.single('file'),
   async (req, res) => {
-    // console.log(upload.single('file'));
+
     try {
       cloudinary.config({
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -38,10 +38,12 @@ uploadRouter.post(
       };
 
       const result = await streamUpload(req);
-      // console.log(result);
-      res.send(result);
+
+      const secure_url = result.secure_url
+      res.send({secure_url});
+   
     } catch (error) {
-      console.error(error);
+  
       res.status(500).send('Internal Server Error');
     }
   }
