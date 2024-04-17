@@ -17,7 +17,7 @@ export default function CartScreen() {
   const {
     cart: { cartItems },
   } = state;
-  console.log(lowCount);
+
   const threshold = 10;
 
   const updateCartHandler = async (item, quantity, threshold) => {
@@ -30,16 +30,16 @@ export default function CartScreen() {
       setLowCount(true);
     }
     // }
-    console.log(item.quantity, item.countInStock);
 
-    const { data } = await axios.get(`/db/products/${item._id}`);
+
+    const { data } = await axios.get(`/db/products/id/${item._id}`);
     if (data.countInStock < quantity) {
       window.alert('Sorry. Product is out of stock');
       return;
     }
-    if (item.countInStock - (item.quantity + 1) <= 10) {
-      setLowCount(true);
-    }
+    // if (item.countInStock - (item.quantity + 1) <= 10) {
+    //   setLowCount(true);
+    // }
 
     ctxDispatch({
       type: 'CART_ADD_ITEM',
@@ -54,6 +54,50 @@ export default function CartScreen() {
   const checkoutHandler = () => {
     navigate('/signin?redirect=/shipping');
   };
+
+
+  
+
+  
+
+
+  // console.log(cartItems)
+
+    // console.log(state)
+
+    const postToCart = async() => {
+      try {
+      
+    
+        const { cartThings } = await axios.post(
+          '/db/addtocart',
+          {
+            userId: state.cart.userInfo._id,
+            cartItems: state.cart.shippingAddress,
+          
+          },
+          {
+            headers: {
+              authorization: `Bearer ${state.userInfo.token}`,
+            },
+          }
+        );
+      
+    
+      } catch (err) {
+    
+      }
+    }
+    // postToCart()
+
+
+
+
+
+
+
+
+
 
   return (
     <div>
@@ -73,12 +117,12 @@ export default function CartScreen() {
                 <ListGroup.Item key={item._id}>
                   <Row className='align-items-center'>
                     <Col md={4}>
+                      <Link className='namestyle' to={`/product/${item.slug}`}>
                       <img
                         src={item.image}
                         alt={item.name}
                         className='img-fluid rounded img-thumbnail'
                       ></img>{' '}
-                      <Link className='namestyle' to={`/product/${item.slug}`}>
                         {item.name}
                       </Link>
                     </Col>
@@ -114,24 +158,31 @@ export default function CartScreen() {
                             // console.log('d');
                           }
                         }}
-                        disabled={
-                          item.quantity === item.countInStock ||
-                          lowCount ||
-                          item.countInStock === 10 ||
-                          (lowCount && item.quantity === 1)
+                       disabled={
+                          (item.countInStock - item.quantity < 10 )||
+          
+                          item.countInStock < 10 
+                         
                         }
                       >
                         <i className='fas fa-plus-circle'></i>
                       </Button>
+
                     </Col>
-                    <Col md={3}>${item.price}</Col>
+                    <Col md={3}>${item.price} {}</Col>
+                  
                     <Col md={2}>
                       <Button
                         onClick={() => removeItemHandler(item)}
                         variant='light'
-                      >
+                        >
                         <i className='red-bg fas fa-trash'></i>
                       </Button>
+                  {
+                    item.countInStock < 10  || (item.countInStock - item.quantity < 10 ) ?  (
+                      <strong className='low'  md={3}>{"Low"} {}</strong>) : (null)
+    
+                  }
                     </Col>
                   </Row>
                 </ListGroup.Item>

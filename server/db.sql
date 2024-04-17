@@ -30,6 +30,16 @@ Create table users(
   ON UPDATE NO ACTION)
   ;
 
+ CREATE TABLE adminrequest (
+	_id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user_id bigint,
+    request_text varchar(10000) NOT NULL, 
+    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    request_date datetime,
+	FOREIGN KEY (user_id) REFERENCES user(userID)
+);
+ 
+
 
 
 CREATE TABLE categories (
