@@ -5,6 +5,10 @@ import { pool } from '../db.js';
 import { sendEmail } from "../sendOrderMail.js";
 import { sendApproval } from "../sendApprovedRefund.js";
 import { sendDenied } from "../sendDenyRefund.js";
+import { sendDiscount } from '../sendDiscount.js';
+import crypto from "crypto" 
+
+
 
 import { isAuth, isAdmin, mailgun, payOrderEmailTemplate } from '../utils.js';
 
@@ -20,6 +24,30 @@ orderRouter.get(
     res.send(orders[0]);
   })
 );
+
+
+
+// function generateHexCode(length) {
+//   return crypto.randomBytes(length).toString('hex').toUpperCase().substr(0, length);
+// }
+
+// const hexCode = generateHexCode(6); // 3 bytes will generate a 6-character hexadecimal code
+
+
+orderRouter.post(
+  '/discount',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+
+const disCount = req.body.discountNow
+// console.log(disCount)
+    await sendDiscount(req.user.email, "Heres your Code!", disCount, req.user.name )
+    res.send({disCount});
+  })
+);
+
+
+
 
 
 

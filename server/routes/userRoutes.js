@@ -77,6 +77,7 @@ userRouter.put(
         name: updatedUser.name,
         email: updatedUser.email,
         isAdmin: updatedUser.isAdmin,
+        birthday: updatedUser.birthday,
         token: generateToken(updatedUser),
       });
     } else {
@@ -243,6 +244,8 @@ userRouter.post(
           name: user[0][0].name,
           email: user[0][0].email,
           isAdmin: user[0][0].isAdmin,
+          birthday:user[0][0].birthday,
+          username: user[0][0].username,
           token: generateToken(user[0][0]),
         });
         return;
@@ -258,14 +261,16 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     try {
       
-      const query = 'INSERT INTO users (name, email, username, password )VALUES(?, ?, ?, ?);';
-  
+      const query = 'INSERT INTO users (name, email, username, password, birthday )VALUES(?, ?, ?, ?, ?);';
+
+
       let name = req.body.name;
       let email = req.body.email;
       let username= req.body.username;
       let password = bcrypt.hashSync(req.body.password);
+      let birthday = req.body.mynewformattedDate2
   
-      const user = await pool.query(query, [name, email, username, password]);
+      const user = await pool.query(query, [name, email, username, password, birthday]);
 
       const url = "https://team2furniturestore.netlify.app"
       await sendSignUpEmail(email, `Welcome ${name}!`, url, name, )
