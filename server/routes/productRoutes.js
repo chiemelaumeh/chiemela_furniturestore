@@ -81,6 +81,8 @@ productRouter.post(
 );
 
 
+
+
 productRouter.post(
   '/restock/:id',
   isAuth,
@@ -220,12 +222,12 @@ productRouter.get(
     const products = data[0];
     // .skip(pageSize * (page - 1))
     // .limit(pageSize);
-    const countProducts = await Product.countDocuments();
+    // const countProducts = await Product.countDocuments();
     res.send({
       products,
-      countProducts,
+      // countProducts,
       page,
-      pages: Math.ceil(countProducts / pageSize),
+      // pages: Math.ceil(countProducts / pageSize),
     });
   })
 );
