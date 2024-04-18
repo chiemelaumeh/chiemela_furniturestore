@@ -86,7 +86,7 @@ export default function OrderListScreen() {
       }
     }
   };
-
+  const reversedData = orders ? orders.slice().reverse() : [];
   return (
     <div>
       <Helmet>
@@ -107,30 +107,22 @@ export default function OrderListScreen() {
               <th>DATE</th>
               <th>TOTAL</th>
               <th>PAID</th>
-              <th>DELIVERED</th>
-              <th>ACTIONS</th>
+              <th>STATUS</th>
+
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {reversedData.map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
                 <td>{order.user_name ? order.user_name : 'DELETED USER'}</td>
-                <td>{order.createdAt.substring(0, 10)}</td>
-                <td>{order.totalPrice.toFixed(2)}</td>
-                <td>
-                  {order.isPaid === 'true'
-                    ? order.paidAt.substring(0, 10)
-                    : 'Yes'}
-                </td>
+                <td>{order.createdAt}</td>
+                <td>${order.totalPrice}</td>
+                <td>True</td>
 
+                <td>{order.isDelivered === 'false' ? 'Shipping...' : 'No'}</td>
                 <td>
-                  {order.isDelivered === 'true'
-                    ? order.deliveredAt.substring(0, 10)
-                    : 'Yes'}
-                </td>
-                <td>
-                  <Button
+                  {/* <Button
                     type='button'
                     variant='light'
                     onClick={() => {
@@ -138,15 +130,15 @@ export default function OrderListScreen() {
                     }}
                   >
                     Details
-                  </Button>
+                  </Button> */}
                   &nbsp;
-                  <Button
+                  {/* <Button style={{"backgroundColor":"rgb(185, 56, 14)", "color": "white"}}
                     type='button'
                     variant='light'
                     onClick={() => deleteHandler(order)}
                   >
-                    Delete
-                  </Button>
+                    Cancel & Refund
+                  </Button> */}
                 </td>
               </tr>
             ))}

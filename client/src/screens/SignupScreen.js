@@ -17,29 +17,41 @@ export default function SignupScreen() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { userInfo } = state;
   const submitHandler = async (e) => {
+   
     e.preventDefault();
     if (password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
+ 
+
     try {
       const { data } = await Axios.post('/db/users/signup', {
         name,
         email,
+        username,
         password,
       });
-      ctxDispatch({ type: 'USER_SIGNIN', payload: data });
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      navigate(redirect || '/');
+
+     
+
+  if( data.error && data.error.errno === 1062) {
+    toast.error("Email or username is aready taken. Try again")
+return;
+}
+navigate("/signin");
+toast.success('Account Created! Now sign in');
     } catch (err) {
       toast.error(getError(err));
     }
+
   };
 
   useEffect(() => {
@@ -66,6 +78,14 @@ export default function SignupScreen() {
             type="email"
             required
             onChange={(e) => setEmail(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>Username</Form.Label>
+          <Form.Control
+           
+            required
+            onChange={(e) => setUsername(e.target.value)}
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="password">

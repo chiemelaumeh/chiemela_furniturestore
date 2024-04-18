@@ -26,6 +26,8 @@ export default function OrderHistoryScreen() {
   const { userInfo } = state;
   const navigate = useNavigate();
 
+  // console.log(userInfo);
+
   const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
@@ -49,6 +51,8 @@ export default function OrderHistoryScreen() {
     };
     fetchData();
   }, [userInfo]);
+  const reversedData = orders ? orders.slice().reverse() : [];
+
   return (
     <div>
       <Helmet>
@@ -59,9 +63,9 @@ export default function OrderHistoryScreen() {
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
-        <MessageBox variant="danger">{error}</MessageBox>
+        <MessageBox variant='danger'>{error}</MessageBox>
       ) : (
-        <table className="table">
+        <table className='table'>
           <thead>
             <tr>
               <th>ID</th>
@@ -73,26 +77,22 @@ export default function OrderHistoryScreen() {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
+            {reversedData.map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
-                <td>{order.createdAt.substring(0, 10)}</td>
-                <td>{order.totalPrice.toFixed(2)}</td>
-                <td>{order.isPaid ? order.paidAt.substring(0, 10) : 'No'}</td>
-                <td>
-                  {order.isDelivered
-                    ? order.deliveredAt.substring(0, 10)
-                    : 'No'}
-                </td>
+                <td>{order.createdAt}</td>
+                <td>${order.totalPrice}</td>
+                <td>Yes</td>
+                <td>{order.isDelivered === "false" ? "Shipping ..." : "No"}</td>
                 <td>
                   <Button
-                    type="button"
-                    variant="light"
+                    type='button'
+                    variant='light'
                     onClick={() => {
                       navigate(`/order/${order._id}`);
                     }}
                   >
-                    Details
+                    Order Details
                   </Button>
                 </td>
               </tr>

@@ -9,7 +9,7 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Container from 'react-bootstrap/Container';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useReducer } from 'react';
 import { Store } from './Store';
 import CartScreen from './screens/CartScreen';
 import SigninScreen from './screens/SigninScreen';
@@ -25,6 +25,8 @@ import { getError } from './utils';
 import axios from 'axios';
 import SearchBox from './components/SearchBox';
 import SearchScreen from './screens/SearchScreen';
+import Rating from './components/Rating';
+import BSearchScreen from './screens/BSearchScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardScreen from './screens/DashboardScreen';
 import AdminRoute from './components/AdminRoute';
@@ -33,29 +35,63 @@ import ProductEditScreen from './screens/ProductEditScreen';
 import ProductCreateScreen from './screens/ProductCreateScreen';
 import OrderListScreen from './screens/OrderListScreen';
 import UserListScreen from './screens/UserListScreen';
+import RefundListScreen from './screens/RefundListScreen';
+import RefundScreen from './screens/RefundScreen';
 import UserEditScreen from './screens/UserEditScreen';
 import MapScreen from './screens/MapScreen';
 import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import { MdOutlineLightMode } from 'react-icons/md';
 import { MdOutlineDarkMode } from 'react-icons/md';
+import RequestAdmin from './components/RequestAdmin';
+import Restock from './screens/Restock';
 
 function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const { fullBox, cart, userInfo } = state;
 
-  // axios.defaults.baseURL = 'http://localhost:4000/';
-  axios.defaults.baseURL = 'https://team2databasefurniturestore.onrender.com/';
+  axios.defaults.baseURL = 'http://localhost:4000/';
+  // axios.defaults.baseURL = 'https://team2furniturestore.onrender.com/';
 
+
+  
   const signoutHandler = () => {
     ctxDispatch({ type: 'USER_SIGNOUT' });
     localStorage.removeItem('userInfo');
     localStorage.removeItem('shippingAddress');
     localStorage.removeItem('paymentMethod');
+    localStorage.removeItem('cartItems');
     window.location.href = '/signin';
   };
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [rating, setRating] = useState([]);
+
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case 'FETCH_REQUEST':
+        return { ...state, loading: true };
+      case 'FETCH_SUCCESS':
+        return { ...state, products: action.payload, loading: false };
+      case 'FETCH_FAIL':
+        return { ...state, loading: false, error: action.payload };
+      default:
+        return state;
+    }
+  };
+
+  const [{ loading, error, products }, dispatch] = useReducer(reducer, {
+    products: [],
+    loading: true,
+    error: '',
+  });
+  
+
+
+
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -68,19 +104,76 @@ function App() {
     };
     fetchCategories();
   }, []);
-  // if (userInfo.isAdmin === "true") {
-  //   userInfo.isAdmin = true
-  // } else {
-  //   userInfo.isAdmin = false
-  // }
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await axios.get(`/db/products/brands`);
+        setBrands(data);
+ 
+      } catch (err) {
+        toast.error(getError(err));
+      }
+    };
+    fetchCategories();
+  }, []);
+ const starRatings = ["0 - 499","500 - 1499","1500 - 4999","5000 - 9999","10000 - 14999"]
+ useEffect(() => {
+  const fetchData = async () => {
+    dispatch({ type: 'FETCH_REQUEST' });
+    try {
+      const result = await axios.get('/db/products');
+      dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
+    } catch (err) {
+      dispatch({ type: 'FETCH_FAIL', payload: err.message });
+    }
 
+    // setProducts(result.data);
+  };
+  fetchData();
+}, []);
+
+let countLessThan10 = 0;
+
+products.forEach((product) => {
+  if (product.countInStock < 10) {
+    countLessThan10++;
+  }
+});
+
+
+
+
+
+
+
+
+//  { countLessThan10 > 0 && state.userInfo.isAdmin === "true" ? (
+//   <Link
+// to='/admin/restock'
+
+
+//                 style={{ color: 'white' }}
+            
+//                 className='floater2'
+//               >
+                
+//                 {/* <FaBell className='changer2'/> */}
+//                 { (
+//                   <Badge className='smaller2' pill bg='danger'>
+//                     Redzone
+//    ({countLessThan10})
+//                   </Badge>
+//                 )}
+//               </Link>):(null)
+// }
+ 
   return (
     <BrowserRouter>
       <div
         className={
           sidebarIsOpen
             ? fullBox
-              ? 'site-container active-cont d-flex flex-column full-box'
+              ? 'site-container active-cont d-flex flex-column'
               : 'site-container active-cont d-flex flex-column'
             : fullBox
             ? 'site-container  d-flex flex-column full-box'
@@ -112,6 +205,18 @@ function App() {
               <Navbar.Collapse id='basic-navbar-nav'>
                 {/* <SearchBox /> */}
                 <Nav className='me-auto  w-100   justify-content-end'>
+                  {/* {
+                    userInfo && userInfo.isAdmin === "false" &&
+
+                <Link
+                    style={{ color: 'white' }}
+                    to='/requestadmin'
+                    className='nav-link'
+                  >
+                    Become an Admin
+                   
+                  </Link>
+                  } */}
                   <Link
                     style={{ color: 'white' }}
                     to='/cart'
@@ -124,13 +229,14 @@ function App() {
                       </Badge>
                     )}
                   </Link>
+                
                   {userInfo ? (
                     <NavDropdown title={userInfo.name} id='basic-nav-dropdown'>
                       <LinkContainer to='/profile'>
                         <NavDropdown.Item>User Profile</NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to='/orderhistory'>
-                        <NavDropdown.Item>Order History</NavDropdown.Item>
+                        <NavDropdown.Item>My Orders</NavDropdown.Item>
                       </LinkContainer>
                       <NavDropdown.Divider />
                       <Link
@@ -149,7 +255,7 @@ function App() {
                   {userInfo && userInfo.isAdmin === 'true' && (
                     <NavDropdown title='Admin' id='admin-nav-dropdown'>
                       <LinkContainer to='/admin/dashboard'>
-                        <NavDropdown.Item>Dashboard</NavDropdown.Item>
+                        <NavDropdown.Item>Reports</NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to='/admin/products'>
                         <NavDropdown.Item>Products</NavDropdown.Item>
@@ -160,6 +266,9 @@ function App() {
                       <LinkContainer to='/admin/users'>
                         <NavDropdown.Item>Users</NavDropdown.Item>
                       </LinkContainer>
+                      <LinkContainer to='/admin/refunds'>
+                        <NavDropdown.Item>Refund Requests</NavDropdown.Item>
+                      </LinkContainer>
                     </NavDropdown>
                   )}
                 </Nav>
@@ -167,37 +276,96 @@ function App() {
             </Container>
           </Navbar>
         </header>
+       
         <div
           className={
             sidebarIsOpen
-              ? 'active-nav side-navbar d-flex justify-content-between flex-wrap flex-column'
+              ? 'active-nav side-navbar d-flex justify-content-between flex-wrap flex-column '
               : 'side-navbar d-flex justify-content-between flex-wrap flex-column'
           }
         >
           <Nav className=' flex-column text-white w-100 p-2'>
             <Nav.Item>
-              <strong>Categories</strong>
+              <strong style={{color: "black"}}>Categories</strong>
             </Nav.Item>
+            <div style={{ border: '2px solid rgb(185, 56, 14)', borderRadius: '10px', marginBottom: "1rem",  }}>   
+            
+            <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+  <Nav className="flex-column">
             {categories.map((category) => (
               <Nav.Item key={category}>
                 <LinkContainer
                   to={{ pathname: '/search', search: `category=${category}` }}
-                  onClick={() => setSidebarIsOpen(false)}
+      
                 >
                   <Nav.Link className='namestyle '>{category}</Nav.Link>
                 </LinkContainer>
               </Nav.Item>
             ))}
+            
+            </Nav>
+</div>
+</div>
+
+            <Nav.Item>
+              <strong style={{color: "black"}}>Brands</strong>
+            </Nav.Item>
+            <div style={{ border: '2px solid rgb(185, 56, 14)', borderRadius: '10px', marginBottom: "1rem", }}>    
+<div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+  <Nav className="flex-column">
+    {brands.map((brand) => (
+      <Nav.Item key={brand} style={{ width: '100%' }}>
+        <LinkContainer
+          to={{ pathname: '/bsearch', search: `brand=${brand}` }}
+          // onClick={() => setSidebarIsOpen(false)}
+        >
+          <Nav.Link className='namestyle'>{brand}</Nav.Link>
+        </LinkContainer>
+      </Nav.Item>
+    ))}
+  </Nav>
+</div>
+</div>
+
+{/* <Nav.Item>
+              <strong style={{color: "black"}}>Price</strong>
+            </Nav.Item> */}
+{/*         
+<div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+  <Nav className="flex-column">
+    {starRatings.map((starRating) => (
+      <Nav.Item key={starRating} style={{ width: '100%' }}>
+        <LinkContainer
+          to={{ pathname: '/rsearch', search: `starRating=${starRating}` }}
+          // onClick={() => setSidebarIsOpen(false)}
+        >
+          <Nav.Link className='namestyle'>{starRating}</Nav.Link>
+        </LinkContainer>
+      </Nav.Item>
+    ))}
+  </Nav>
+</div>
+ */}
+
+ 
+ 
+
+
           </Nav>
         </div>
         <main>
+          
           <Container className='mt-3'>
             <Routes>
               <Route path='/product/:slug' element={<ProductScreen />} />
               <Route path='/cart' element={<CartScreen />} />
               <Route path='/search' element={<SearchScreen />} />
+              <Route path='/bsearch' element={<BSearchScreen />} />
               <Route path='/signin' element={<SigninScreen />} />
               <Route path='/signup' element={<SignupScreen />} />
+              <Route path='/requestadmin' element={<RequestAdmin />} />
+              
+
               <Route
                 path='/forget-password'
                 element={<ForgetPasswordScreen />}
@@ -229,6 +397,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <OrderScreen />
+                  </ProtectedRoute>
+                }
+              ></Route>
+               <Route
+                path='/refund/:id'
+                element={
+                  <ProtectedRoute>
+                    <RefundScreen />
                   </ProtectedRoute>
                 }
               ></Route>
@@ -278,6 +454,14 @@ function App() {
                   </AdminRoute>
                 }
               ></Route>
+               <Route
+                path='/admin/refunds'
+                element={
+                  <AdminRoute>
+                    <RefundListScreen />
+                  </AdminRoute>
+                }
+              ></Route>
               <Route
                 path='/admin/product/:id'
                 element={
@@ -286,6 +470,14 @@ function App() {
                   </AdminRoute>
                 }
               ></Route>
+            <Route
+                path='/admin/restock'
+                element={
+                  <AdminRoute>
+                    <Restock />
+                  </AdminRoute>
+                }
+              ></Route> 
               <Route
                 path='/admin/product/newproduct'
                 element={
@@ -316,3 +508,6 @@ function App() {
 }
 
 export default App;
+
+
+

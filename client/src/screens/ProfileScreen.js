@@ -6,6 +6,7 @@ import { Store } from '../Store';
 import { toast } from 'react-toastify';
 import { getError } from '../utils';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -32,9 +33,17 @@ export default function ProfileScreen() {
   const [{ loadingUpdate }, dispatch] = useReducer(reducer, {
     loadingUpdate: false,
   });
+  // e.preventDefault();
+  
+const navigate = useNavigate()
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    toast.success('User updated successfully');
     try {
       const { data } = await axios.put(
         '/db/users/profile',
@@ -50,9 +59,11 @@ export default function ProfileScreen() {
       dispatch({
         type: 'UPDATE_SUCCESS',
       });
-      ctxDispatch({ type: 'USER_SIGNIN', payload: data });
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      toast.success('User updated successfully');
+         localStorage.removeItem('userInfo');
+      localStorage.removeItem('shippingAddress');
+      localStorage.removeItem('paymentMethod');
+      localStorage.removeItem('cartItems');
+      window.location.href = '/signin';
     } catch (err) {
       dispatch({
         type: 'FETCH_FAIL',
@@ -74,6 +85,7 @@ export default function ProfileScreen() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
+            disabled
           />
         </Form.Group>
         <Form.Group className="mb-3" controlId="name">
@@ -81,6 +93,7 @@ export default function ProfileScreen() {
           <Form.Control
             type="email"
             value={email}
+            disabled
             onChange={(e) => setEmail(e.target.value)}
             required
           />

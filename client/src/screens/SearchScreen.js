@@ -76,6 +76,8 @@ export default function SearchScreen() {
   const { search } = useLocation();
   const sp = new URLSearchParams(search); // /search?category=Shirts
   const category = sp.get('category') || 'all';
+
+  
   const query = sp.get('query') || 'all';
   const price = sp.get('price') || 'all';
   const rating = sp.get('rating') || 'all';
@@ -104,8 +106,26 @@ export default function SearchScreen() {
     };
     fetchData();
   }, [category, error]);
+  
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const { data } = await axios.get(
+  //         `/db/products/rallratings?rating=${rating}`
+  //       );
+  //       dispatch({ type: 'FETCH_SUCCESS', payload: data });
+  //     } catch (err) {
+  //       dispatch({
+  //         type: 'FETCH_FAIL',
+  //         payload: getError(error),
+  //       });
+  //     }
+  //   };
+  //   fetchData();
+  // }, [rating, error]);
 
   const [categories, setCategories] = useState([]);
+ 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -117,6 +137,7 @@ export default function SearchScreen() {
     };
     fetchCategories();
   }, [dispatch]);
+
 
   const getFilterUrl = (filter, skipPathname) => {
     const filterPage = filter.page || page;
@@ -153,7 +174,7 @@ export default function SearchScreen() {
 
               <Row>
                 {products.map((product) => (
-                  <Col sm={6} lg={4} className="mb-3" key={product._id}>
+                  <Col sm={6} md={2} lg={4} className='mb-3' key={product._id}>
                     <Product product={product}></Product>
                   </Col>
                 ))}
