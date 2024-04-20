@@ -14,7 +14,7 @@ reportRouter.post(
     const { firstSelection, secondSelection, thirdSelection } = req.body;
 
     const catArray = [];
-    if (firstSelection === "Sales / Transactions") {
+    if (firstSelection === "Products / Categories") {
       if (secondSelection === "Best Selling Category") {
         if (thirdSelection === "All time") {
           const order = await pool.query(`SELECT orderItems FROM orders`);

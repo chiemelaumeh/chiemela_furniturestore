@@ -410,3 +410,35 @@ create Table sale (
 
 )
 
+
+
+
+-- delimiter //
+-- CREATE TRIGGER birthday_notification
+-- BEFORE INSERT ON orders
+-- FOR EACH ROW
+-- BEGIN
+--     DECLARE user_birthday DATE;
+--     DECLARE today DATE;
+
+--     -- Get the user's birthday
+--     SELECT birthday INTO user_birthday FROM users WHERE _id = NEW.user_id;
+
+--     -- Get today's date
+--     SET today = CURDATE();
+
+--     -- Check if it's the user's birthday
+--     IF birthday = today THEN
+--         -- Launch a trigger to the backend
+--         -- Replace 'your_node_server_endpoint' with your actual endpoint
+--         SET @url = CONCAT('http://your_node_server_endpoint?user_id=', NEW.user_id);
+--         -- This assumes you have a mechanism in your backend to send a code to the user based on user_id
+
+--         -- You can use MySQL's sys_exec function if available to hit the Node server
+--         -- sys_exec(CONCAT('curl "', @url, '"'));
+
+--         -- Alternatively, if sys_exec is not available, you can log the URL and process it in your application
+--         -- INSERT INTO notification_log (notification_url) VALUES (@url);
+
+--     END IF;
+-- END; //
