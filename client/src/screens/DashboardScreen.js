@@ -75,12 +75,12 @@ export default function DashboardScreen() {
   const [fourthSelection, setFourthSelection] = useState("");
   const [showReport, setShowReport] = useState(false);
 
-  const firstOptions = ["Sales / Transactions", 
+  const firstOptions = ["Products / Categories", 
   "Users", 
   // "Refunds"
 ];
   const secondOptions = {
-    "Sales / Transactions": [
+    "Products / Categories": [
       "Best Selling Category",
       "Worst Selling Category",
       "Best selling product",
@@ -509,7 +509,7 @@ if (thirdSelection === "Highest transactions") {
                   ></Chart>
                 )}
               </div>
-              <div className="my-3">
+              {/* <div className="my-3">
                 <h2>Categories</h2>
                 {summary.productCategories.length === 0 ? (
                   <MessageBox>No Category</MessageBox>
@@ -525,7 +525,7 @@ if (thirdSelection === "Highest transactions") {
                     ]}
                   ></Chart>
                 )}
-              </div>
+              </div> */}
             </>
           )}
         </div>
@@ -545,7 +545,7 @@ if (thirdSelection === "Highest transactions") {
             <Button onClick={() => toPDF()} className="rightt">Download Report</Button>
           </div>
 
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best Selling Category" &&
             thirdSelection === "All time" && (
               <>
@@ -561,6 +561,7 @@ if (thirdSelection === "Highest transactions") {
                       <tr>
                         <th>Index</th>
                         <th>Value</th>
+            
                       </tr>
                     </thead>
                     <tbody>
@@ -574,6 +575,7 @@ if (thirdSelection === "Highest transactions") {
                           >
                             {category}
                           </td>
+    
                         </tr>
                       ))}
                     </tbody>
@@ -582,7 +584,7 @@ if (thirdSelection === "Highest transactions") {
               </>
             )}
 
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best Selling Category" &&
             thirdSelection === "Last week" && (
               <>
@@ -618,7 +620,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best Selling Category" &&
             thirdSelection === "Today" && (
               <>
@@ -654,7 +656,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best Selling Category" &&
             thirdSelection === "Last month" && (
               <>
@@ -690,7 +692,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best Selling Category" &&
             thirdSelection === "Last Year" && (
               <>
@@ -726,7 +728,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst Selling Category" &&
             thirdSelection === "Last week" && (
               <>
@@ -758,7 +760,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst Selling Category" &&
             thirdSelection === "Today" && (
               <>
@@ -790,7 +792,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst Selling Category" &&
             thirdSelection === "All time" && (
               <>
@@ -822,7 +824,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst Selling Category" &&
             thirdSelection === "Last month" && (
               <>
@@ -854,7 +856,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst Selling Category" &&
             thirdSelection === "Last Year" && (
               <>
@@ -886,7 +888,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best selling product" &&
             thirdSelection === "All time" && (
               <>
@@ -921,7 +923,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best selling product" &&
             thirdSelection === "Today" && (
               <>
@@ -956,7 +958,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best selling product" &&
             thirdSelection === "Last month" && (
               <>
@@ -991,7 +993,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best selling product" &&
             thirdSelection === "Last week" && (
               <>
@@ -1026,7 +1028,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Best selling product" &&
             thirdSelection === "Last Year" && (
               <>
@@ -1061,7 +1063,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst selling product" &&
             thirdSelection === "Last week" && (
               <>
@@ -1092,7 +1094,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst selling product" &&
             thirdSelection === "Today" && (
               <>
@@ -1123,7 +1125,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst selling product" &&
             thirdSelection === "All time" && (
               <>
@@ -1156,7 +1158,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst selling product" &&
             thirdSelection === "Last month" && (
               <>
@@ -1187,7 +1189,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Worst selling product" &&
             thirdSelection === "Last Year" && (
               <>
@@ -1219,7 +1221,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Highest Transactions" &&
             thirdSelection === "All time" && (
               <>
@@ -1249,7 +1251,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-          {firstSelection === "Sales / Transactions" &&
+          {firstSelection === "Products / Categories" &&
             secondSelection === "Highest Transactions" &&
             thirdSelection === "Today" && (
               <>
@@ -1279,7 +1281,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Highest Transactions" &&
             thirdSelection === "Last week" && (
               <>
@@ -1309,7 +1311,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Highest Transactions" &&
             thirdSelection === "Last month" && (
               <>
@@ -1339,7 +1341,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Highest Transactions" &&
             thirdSelection === "Last Year" && (
               <>
@@ -1369,7 +1371,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Lowest Transactions" &&
             thirdSelection === "All time" && (
               <>
@@ -1399,7 +1401,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Lowest Transactions" &&
             thirdSelection === "Last month" && (
               <>
@@ -1429,7 +1431,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Lowest Transactions" &&
             thirdSelection === "Today" && (
               <>
@@ -1459,7 +1461,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Lowest Transactions" &&
             thirdSelection === "Last week" && (
               <>
@@ -1489,7 +1491,7 @@ if (thirdSelection === "Highest transactions") {
                 </div>
               </>
             )}
-               {firstSelection === "Sales / Transactions" &&
+               {firstSelection === "Products / Categories" &&
             secondSelection === "Lowest Transactions" &&
             thirdSelection === "Last Year" && (
               <>
