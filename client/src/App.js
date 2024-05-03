@@ -188,7 +188,7 @@ products.forEach((product) => {
               </Button>
 
               <LinkContainer style={{ color: 'white' }} to='/'>
-                <Navbar.Brand> Team 2 Furniture store</Navbar.Brand>
+                <Navbar.Brand> Chiemela Furniture Store</Navbar.Brand>
               </LinkContainer>
               <LinkContainer style={{ color: 'white' }} to='/'>
                 <Navbar.Brand>
