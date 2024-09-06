@@ -88,10 +88,6 @@ function App() {
   });
   
 
-
-
-
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -140,31 +136,6 @@ products.forEach((product) => {
 });
 
 
-
-
-
-
-
-
-//  { countLessThan10 > 0 && state.userInfo.isAdmin === "true" ? (
-//   <Link
-// to='/admin/restock'
-
-
-//                 style={{ color: 'white' }}
-            
-//                 className='floater2'
-//               >
-                
-//                 {/* <FaBell className='changer2'/> */}
-//                 { (
-//                   <Badge className='smaller2' pill bg='danger'>
-//                     Redzone
-//    ({countLessThan10})
-//                   </Badge>
-//                 )}
-//               </Link>):(null)
-// }
  
   return (
     <BrowserRouter>
