@@ -147,20 +147,14 @@ userRouter.post(
   expressAsyncHandler(async (req, res) => {
     jwt.verify(req.body.token, process.env.JWT_SECRET, async (err, decode) => {
       if (err) {
-        res.status(401).send({ message: 'Invalid Token: Expired' });
+        res.status(401).send({ message: 'Invalid Token' });
       } else {
-        
     
         const user = await pool.query('SELECT * FROM users WHERE reset_token = ?', [
           req.body.token,
         ]);
        
         if (user) {
-      const emptyToken = user[0][0].reset_token === "" ? true : false;
-      if(emptyToken === true) {
-        res.send({ message: 'Invalid Token: Used' });
-        return;
-      }
           if (req.body.password) {
             const newPassword = bcrypt.hashSync(req.body.password, 8);
             const query =

@@ -1,3 +1,23 @@
+-- What I did to import dumpfile to mysql
+
+-- Remove these lines from dumpfile
+
+-- SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+-- SET @@SESSION.SQL_LOG_BIN= 0;
+-- SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '';
+-- SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+
+-- create parameter group on amazon RDS and add it to the DB
+-- https://www.youtube.com/watch?v=c9p8KbbO7TE, (change log_bin_trust_function_Creators to 1 )
+-- create the db.schema in workbench
+-- specify the db in the dumpfile
+
+
+
+
+
+
+
 -- MySQL dump 10.13  Distrib 8.0.36, for macos14 (arm64)
 --
 -- Host: aws.connect.psdb.cloud    Database: cosc-3380-team-project-db
